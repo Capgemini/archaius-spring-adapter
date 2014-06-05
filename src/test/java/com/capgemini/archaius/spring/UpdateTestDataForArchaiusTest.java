@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class MainClassToRunBeforeRunningArchaiusTest {
+public class UpdateTestDataForArchaiusTest {
 
 
 	/* the default framework is embedded */
@@ -17,7 +17,7 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 	private String protocol = "jdbc:derby:";
 
 	public static void main(String [] arrs){
-		MainClassToRunBeforeRunningArchaiusTest dpt=new MainClassToRunBeforeRunningArchaiusTest();
+		UpdateTestDataForArchaiusTest dpt=new UpdateTestDataForArchaiusTest();
 		dpt.initializedDerby();
 	}
 	
@@ -29,6 +29,7 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 		ArrayList<Statement> statements = new ArrayList<>(); // list of Statements,
 		// PreparedStatements
 		PreparedStatement psInsert = null;
+		PreparedStatement psUpdate = null;
 		Statement s = null;
 		ResultSet rs = null;
 
@@ -53,7 +54,7 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 			 * directory (user.dir) if derby.system.home is not set.
 			 */
 			conn = DriverManager.getConnection(protocol + dbName
-					+ ";create=true");
+					+ ";create=false");
 
 			System.out.println("Connected to and created database " + dbName);
 
@@ -69,48 +70,32 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 			statements.add(s);
 
 			// We create a table...
-			s.execute("create table MYSITEPROPERTIES(property_key varchar(40), property_value varchar(40))");
+			//s.execute("create table MYSITEPROPERTIES(property_key varchar(40), property_value varchar(40))");
 			System.out.println("Created table MySiteProperties");
 
-			// and add a few rows...
+		
+			// Let's update some rows as well...
+            psUpdate = conn.prepareStatement(
+                        "update MYSITEPROPERTIES set property_key=?, property_value=? where property_key=?");
+            statements.add(psUpdate);
 
-			/*
-			 * It is recommended to use PreparedStatements when you are
-			 * repeating execution of an SQL statement. PreparedStatements also
-			 * allows you to parameterize variables. By using PreparedStatements
-			 * you may increase performance (because the Derby engine does not
-			 * have to recompile the SQL statement each time it is executed) and
-			 * improve security (because of Java type checking).
-			 */
-			// parameter 1 is num (int), parameter 2 is addr (varchar)
-			psInsert = conn
-					.prepareStatement("insert into MYSITEPROPERTIES values (?, ?)");
-			statements.add(psInsert);
+            psUpdate.setString(1, "Error500");
+            psUpdate.setString(2, "New Internal Server Error");
+            psUpdate.setString(3, "Error500");
+            psUpdate.executeUpdate();
+            System.out.println("Updated Error500");
 
-			psInsert.setString(1, "Error404");
-			psInsert.setString(2, "Page not found");
-			psInsert.executeUpdate();
-			System.out.println("Inserted Error404");
+            psUpdate.setString(1, "Error404");
+            psUpdate.setString(2, "New Page not found");
+            psUpdate.setString(3, "Error404");
+            psUpdate.executeUpdate();
+            System.out.println("Updated Error404");
 
-			psInsert.setString(1, "Error500");
-			psInsert.setString(2, "Internal Server Error");
-			psInsert.executeUpdate();
-			System.out.println("Inserted Error500");
-			
-			psInsert.setString(1, "Error400");
-			psInsert.setString(2, "Bad Request");
-			psInsert.executeUpdate();
-			System.out.println("Inserted Error400");
-			
-			psInsert.setString(1, "Error401");
-			psInsert.setString(2, "Unauthorized");
-			psInsert.executeUpdate();
-			System.out.println("Inserted Error500");
-			
-			psInsert.setString(1, "Error407");
-			psInsert.setString(2, "Proxy Authentication Required");
-			psInsert.executeUpdate();
-			System.out.println("Inserted Error407");
+            psUpdate.setString(1, "Error400");
+            psUpdate.setString(2, "New Bad Request");
+            psUpdate.setString(3, "Error400");
+            psUpdate.executeUpdate();
+            System.out.println("Updated Error400");
 
 			
 			/*

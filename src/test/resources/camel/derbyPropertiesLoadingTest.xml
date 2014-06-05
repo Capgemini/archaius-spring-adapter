@@ -10,7 +10,7 @@
 	<bean
 		class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer">
 		<constructor-arg type="java.lang.String">
-			<value>driverClassName#org.apache.derby.jdbc.EmbeddedDriver||url#jdbc:derby:D:\\InstalledSoftware\\db-derby-10.10.2.0-bin\\data\\derbyDB;create=true||querry#select distinct property_key, property_value from	MYSITEPROPERTIES||property_key#property_key||property_value#property_value</value>
+			<value>driverClassName#org.apache.derby.jdbc.EmbeddedDriver||url#jdbc:derby:derbyDB;create=true||querry#select distinct property_key, property_value from	MYSITEPROPERTIES||property_key#property_key||property_value#property_value</value>
 		</constructor-arg>
 	</bean>
 
