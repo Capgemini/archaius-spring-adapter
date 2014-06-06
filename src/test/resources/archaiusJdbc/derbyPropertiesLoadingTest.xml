@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.12.2.xsd">
+
+	<!-- Config loading via Spring-Archaius -->
+	<bean	class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer">
+		<constructor-arg type="java.lang.String">
+			<value>driverClassName#org.apache.derby.jdbc.EmbeddedDriver||url#jdbc:derby:jdbcDemoDB;create=true||username#admin||password#nimda||querry#select distinct property_key, property_value from MYSITEPROPERTIES||property_key#property_key||property_value#property_value</value>
+		</constructor-arg>
+	</bean>
+	
+	<camel:camelContext id="camel" />
+
+</beans>

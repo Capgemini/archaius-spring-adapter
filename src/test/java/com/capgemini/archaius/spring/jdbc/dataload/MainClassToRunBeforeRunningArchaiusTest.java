@@ -1,4 +1,4 @@
-package com.capgemini.archaius.spring;
+package com.capgemini.archaius.spring.jdbc.dataload;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,13 +7,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class MainClassToRunBeforeRunningArchaiusTest {
 
 
 	/* the default framework is embedded */
 	private String framework = "embedded";
-	private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+	//private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+	private String driver = "org.apache.derby.jdbc.ClientDriver";
 	private String protocol = "jdbc:derby:";
 
 	public static void main(String [] arrs){
@@ -31,31 +33,17 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 		PreparedStatement psInsert = null;
 		Statement s = null;
 		ResultSet rs = null;
-
+		String dbName = "jdbcDemoDB"; // the name of the database
 		try {
-			/*Properties props = new Properties(); // connection properties
+
+            Properties props = new Properties(); // connection properties
 			// providing a user name and password is optional in the embedded
 			// and derbyclient frameworks
-			props.put("user", "user1");
-			props.put("password", "user1");*/
+			props.put("user", "admin");
+			props.put("password", "nimda");
 
-			
-			String dbName = "derbyDB"; // the name of the database
-
-			/*
-			 * This connection specifies create=true in the connection URL to
-			 * cause the database to be created when connecting for the first
-			 * time. To remove the database, remove the directory derbyDB (the
-			 * same as the database name) and its contents.
-			 * 
-			 * The directory derbyDB will be created under the directory that
-			 * the system property derby.system.home points to, or the current
-			 * directory (user.dir) if derby.system.home is not set.
-			 */
-			conn = DriverManager.getConnection(protocol + dbName
-					+ ";create=true");
-
-			System.out.println("Connected to and created database " + dbName);
+            
+            conn = DriverManager.getConnection(protocol + dbName + ";create=true",props);
 
 			// We want to control transactions manually. Autocommit is on by
 			// default in JDBC.
@@ -72,7 +60,6 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 			s.execute("create table MYSITEPROPERTIES(property_key varchar(40), property_value varchar(40))");
 			System.out.println("Created table MySiteProperties");
 
-			// and add a few rows...
 
 			/*
 			 * It is recommended to use PreparedStatements when you are
@@ -266,5 +253,5 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 			e = e.getNextException();
 		}
 	}
-	
+
 }

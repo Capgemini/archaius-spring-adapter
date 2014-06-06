@@ -1,4 +1,4 @@
-package com.capgemini.archaius.spring;
+package com.capgemini.archaius.spring.jdbc.dataload;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,8 +7,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Properties;
 
-public class ResetTestDataForArchaiusTest {
+/**
+ * This class update the test data for Archaius to new value.
+ * Error500 = New Internal Server Error
+ * Error404 = New Page not found 
+ * Error400 = New Bad Request
+ * 
+ * @author skumar81
+ *
+ */
+public class UpdateTestDataForArchaiusTest {
 
 
 	/* the default framework is embedded */
@@ -17,7 +27,7 @@ public class ResetTestDataForArchaiusTest {
 	private String protocol = "jdbc:derby:";
 
 	public static void main(String [] arrs){
-		ResetTestDataForArchaiusTest dpt=new ResetTestDataForArchaiusTest();
+		UpdateTestDataForArchaiusTest dpt=new UpdateTestDataForArchaiusTest();
 		dpt.initializedDerby();
 	}
 	
@@ -28,20 +38,17 @@ public class ResetTestDataForArchaiusTest {
 
 		ArrayList<Statement> statements = new ArrayList<>(); // list of Statements,
 		// PreparedStatements
-		PreparedStatement psInsert = null;
 		PreparedStatement psUpdate = null;
 		Statement s = null;
 		ResultSet rs = null;
 
 		try {
-			/*Properties props = new Properties(); // connection properties
-			// providing a user name and password is optional in the embedded
-			// and derbyclient frameworks
-			props.put("user", "user1");
-			props.put("password", "user1");*/
+			Properties props = new Properties(); // connection properties
+			props.put("user", "admin");
+			props.put("password", "nimda");
 
 			
-			String dbName = "derbyDB"; // the name of the database
+			String dbName = "jdbcDemoDB"; // the name of the database
 
 			/*
 			 * This connection specifies create=true in the connection URL to
@@ -54,7 +61,7 @@ public class ResetTestDataForArchaiusTest {
 			 * directory (user.dir) if derby.system.home is not set.
 			 */
 			conn = DriverManager.getConnection(protocol + dbName
-					+ ";create=false");
+					+ ";create=false",props);
 
 			System.out.println("Connected to and created database " + dbName);
 
@@ -80,19 +87,19 @@ public class ResetTestDataForArchaiusTest {
             statements.add(psUpdate);
 
             psUpdate.setString(1, "Error500");
-            psUpdate.setString(2, "Internal Server Error");
+            psUpdate.setString(2, "New Internal Server Error");
             psUpdate.setString(3, "Error500");
             psUpdate.executeUpdate();
             System.out.println("Updated Error500");
 
             psUpdate.setString(1, "Error404");
-            psUpdate.setString(2, "Page not found");
+            psUpdate.setString(2, "New Page not found");
             psUpdate.setString(3, "Error404");
             psUpdate.executeUpdate();
             System.out.println("Updated Error404");
 
             psUpdate.setString(1, "Error400");
-            psUpdate.setString(2, "Bad Request");
+            psUpdate.setString(2, "New Bad Request");
             psUpdate.setString(3, "Error400");
             psUpdate.executeUpdate();
             System.out.println("Updated Error400");

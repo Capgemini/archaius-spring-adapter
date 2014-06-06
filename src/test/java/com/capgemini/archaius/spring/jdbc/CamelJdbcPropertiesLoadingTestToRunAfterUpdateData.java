@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.capgemini.archaius.spring;
+package com.capgemini.archaius.spring.jdbc;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,24 +33,39 @@ import org.springframework.test.context.ContextConfiguration;
  * @author skumar81
  */
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:camel/derbyPropertiesLoadingTest.xml" })
+@ContextConfiguration(locations = { "classpath:archaiusJdbc/derbyPropertiesLoadingTest.xml" })
 @ActiveProfiles("default")
-public class CamelJdbcPropertiesLoadingTest {
+public class CamelJdbcPropertiesLoadingTestToRunAfterUpdateData {
 
 	@Autowired
 	@Qualifier("camel")
 	protected CamelContext context;
 
-    private final String propertyCamelKey = "Error500";
-    private final String expectedCamelPropertyValue = "Internal Server Error";
+	private final String propertyArchaiusKeyOne = "Error400";
+	private final String expectedArchaiusPropertyValueOne = "New Bad Request";
+
+	private final String propertyArchaiusKeyTwo = "Error404";
+	private final String expectedArchaiusPropertyValueTwo = "New Page not found";
+
+	private final String propertyArchaiusKeyThree = "Error500";
+	private final String expectedArchaiusPropertyValueThree = "New Internal Server Error";
 
     @DirtiesContext
     @Test
     public void propertiesAreLoadedFromDatabaseAndAccessedViaCamelValueAnnotation() throws Exception {
         
-        String camelPropertyValue = context.resolvePropertyPlaceholders("{{" + propertyCamelKey + "}}");
+        String camelPropertyValueOne = context.resolvePropertyPlaceholders("{{" + propertyArchaiusKeyOne + "}}");
+        String camelPropertyValueTwo = context.resolvePropertyPlaceholders("{{" + propertyArchaiusKeyTwo + "}}");
+        String camelPropertyValueThree = context.resolvePropertyPlaceholders("{{" + propertyArchaiusKeyThree + "}}");
         
         assertThat("The context cannot be null.", context != null);
-        assertThat(camelPropertyValue, is(equalTo(expectedCamelPropertyValue)));
+        assertThat(camelPropertyValueOne, is(equalTo(expectedArchaiusPropertyValueOne)));
+        
+        assertThat("The context cannot be null.", context != null);
+        assertThat(camelPropertyValueTwo, is(equalTo(expectedArchaiusPropertyValueTwo)));
+        
+        assertThat("The context cannot be null.", context != null);
+        assertThat(camelPropertyValueThree, is(equalTo(expectedArchaiusPropertyValueThree)));
     }
+
 }

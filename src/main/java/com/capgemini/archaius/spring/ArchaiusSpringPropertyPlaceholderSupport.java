@@ -95,23 +95,143 @@ class ArchaiusSpringPropertyPlaceholderSupport {
 		DynamicPropertyFactory.initWithConfigurationSource(config);
 	}
 
-	public DynamicConfiguration setJdbc(Map<String, String> jdbcMap) {
-		String dbURL = jdbcMap.get("url");
-		String driverClassName=jdbcMap.get("driverClassName");
-		/*String username= jdbcMap.get("username");
-		String password= jdbcMap.get("password");*/
-		String querry= jdbcMap.get("querry");
-		String property_key=jdbcMap.get("property_key");
-		String property_value=jdbcMap.get("property_value");
+	public DynamicConfiguration setJdbcResourceAsPropetiesSource(
+			Map<String, String> jdbcConnectionDetailMap) throws Exception {
 		
-		DriverManagerDataSource ds = new DriverManagerDataSource(driverClassName,dbURL,"","");
-		
-		JDBCConfigurationSource source = new JDBCConfigurationSource(
-				ds,querry,property_key, property_value);
-		
-		FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(0, 10, false);
-		DynamicConfiguration configuration = new DynamicConfiguration(source,scheduler);
+		if (DynamicPropertyFactory.getBackingConfigurationSource() != null) {
+			LOGGER.error("There was already a config source (or sources) configured.");
+			throw new Exception(
+					"Archaius is already configured with a property source/sources.");
+		}
+
+		String dbURL = jdbcConnectionDetailMap.get("url");
+		String driverClassName = jdbcConnectionDetailMap.get("driverClassName");
+		String username= jdbcConnectionDetailMap.get("username"); 
+		String password=jdbcConnectionDetailMap.get("password");
+		String querry = jdbcConnectionDetailMap.get("querry");
+		String property_key = jdbcConnectionDetailMap.get("property_key");
+		String property_value = jdbcConnectionDetailMap.get("property_value");
+
+		DriverManagerDataSource ds = new DriverManagerDataSource(
+				driverClassName, dbURL,username, password); //TODO FIX it have to  pass username and  password
+
+		JDBCConfigurationSource source = new JDBCConfigurationSource(ds,
+				querry, property_key, property_value);
+
+		FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(
+				0, 10, false);
+		DynamicConfiguration configuration = new DynamicConfiguration(source,
+				scheduler);
 		DynamicPropertyFactory.initWithConfigurationSource(configuration);
 		return configuration;
 	}
+
+	protected ConcurrentCompositeConfiguration setMixResourcesAsPropertySource(Resource[] locations,
+			boolean ignoreResourceNotFound, int initialDelayMillis,
+			int delayMillis, boolean ignoreDeletesFromSource,
+			Map<String, String> jdbcConnectionDetailMap) throws Exception {
+
+		if (DynamicPropertyFactory.getBackingConfigurationSource() != null) {
+			LOGGER.error("There was already a config source (or sources) configured.");
+			throw new Exception(
+					"Archaius is already configured with a property source/sources.");
+		}
+		
+		// adding file or classpath properties to the Archaius 
+		ConcurrentCompositeConfiguration concurrentCompositeConfiguration = new ConcurrentCompositeConfiguration();
+		for (int i = locations.length - 1; i >= 0; i--) {
+			try {
+				final String locationURL = locations[i].getURL().toString();
+				concurrentCompositeConfiguration.addConfiguration(new DynamicURLConfiguration(
+						initialDelayMillis, delayMillis,
+						ignoreDeletesFromSource, locationURL));
+			} catch (Exception ex) {
+				if (ignoreResourceNotFound != true) {
+					LOGGER.error(
+							"Exception thrown when adding a configuration location.",
+							ex);
+					throw ex;
+				}
+			}
+		}
+		
+		//adding jdbc tables to the Archaius 
+		String dbURL = jdbcConnectionDetailMap.get("url");
+		String driverClassName = jdbcConnectionDetailMap.get("driverClassName");
+		String username= jdbcConnectionDetailMap.get("username"); 
+		String password=jdbcConnectionDetailMap.get("password");
+		String querry = jdbcConnectionDetailMap.get("querry");
+		String property_key = jdbcConnectionDetailMap.get("property_key");
+		String property_value = jdbcConnectionDetailMap.get("property_value");
+
+		DriverManagerDataSource ds = new DriverManagerDataSource(
+				driverClassName, dbURL, username, password); //TODO fix this here we have to suer name password.
+
+		JDBCConfigurationSource source = new JDBCConfigurationSource(ds,
+				querry, property_key, property_value);
+		FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(
+				0, 10, false);
+		
+		DynamicConfiguration dynamicConfiguration = new DynamicConfiguration(source,
+				scheduler);
+		
+		
+		concurrentCompositeConfiguration.addConfiguration(dynamicConfiguration);
+		
+
+		DynamicPropertyFactory.initWithConfigurationSource(concurrentCompositeConfiguration);
+		
+		return concurrentCompositeConfiguration;
+	}
+	
+	protected ConcurrentCompositeConfiguration setMixResourcesAsPropertySource(Resource location,
+			int initialDelayMillis, int delayMillis, boolean ignoreDeletesFromSource,
+			Map<String, String> jdbcConnectionDetailMap) throws Exception {
+
+		if (DynamicPropertyFactory.getBackingConfigurationSource() != null) {
+			LOGGER.error("There was already a config source (or sources) configured.");
+			throw new Exception(
+					"Archaius is already configured with a property source/sources.");
+		}
+		
+		ConcurrentCompositeConfiguration concurrentCompositeConfiguration = new ConcurrentCompositeConfiguration();
+		
+		// adding file or classpath properties to the Archaius 
+		final String locationURL = location.getURL().toString();
+		final DynamicURLConfiguration urlConfiguration = new DynamicURLConfiguration(
+				initialDelayMillis, delayMillis, ignoreDeletesFromSource,
+				locationURL);
+		
+		concurrentCompositeConfiguration.addConfiguration(urlConfiguration);
+		
+		//adding database tables to the Archaius  
+		String dbURL = jdbcConnectionDetailMap.get("url");
+		String driverClassName = jdbcConnectionDetailMap.get("driverClassName");
+		String username= jdbcConnectionDetailMap.get("username"); 
+		String password=jdbcConnectionDetailMap.get("password");
+		String querry = jdbcConnectionDetailMap.get("querry");
+		String property_key = jdbcConnectionDetailMap.get("property_key");
+		String property_value = jdbcConnectionDetailMap.get("property_value");
+
+		DriverManagerDataSource ds = new DriverManagerDataSource(
+				driverClassName, dbURL, username, password); //TODO fix this here we have to suer name password.
+
+		JDBCConfigurationSource source = new JDBCConfigurationSource(ds,
+				querry, property_key, property_value);
+		FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(
+				0, 10, false);
+		
+		DynamicConfiguration dynamicConfiguration = new DynamicConfiguration(source,
+				scheduler);
+		
+		
+		concurrentCompositeConfiguration.addConfiguration(dynamicConfiguration);
+		
+
+		DynamicPropertyFactory.initWithConfigurationSource(concurrentCompositeConfiguration);
+		
+		return concurrentCompositeConfiguration;
+	}
+
+
 }

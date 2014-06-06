@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.capgemini.archaius.spring;
+package com.capgemini.archaius.spring.jdbc;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -35,7 +35,7 @@ import com.netflix.config.DynamicStringProperty;
  * @author skumar81
  */
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:camel/derbyPropertiesLoadingTest.xml" })
+@ContextConfiguration(locations = { "classpath:archaiusJdbc/derbyPropertiesLoadingTest.xml" })
 @ActiveProfiles("default")
 public class ArchaiusJdbcPropertiesLoadingTestToRunAfterUpdateData {
 
@@ -43,17 +43,34 @@ public class ArchaiusJdbcPropertiesLoadingTestToRunAfterUpdateData {
 	@Qualifier("camel")
 	protected CamelContext context;
 
-    private final String propertyArchaiusKey = "Error400";
-    private final String expectedArchaiusPropertyValue = "New Bad Request";
+	private final String newArchaiusPropertyKeyOne = "Error400";
+	private final String newExpectedArchaiusPropertyValueOne = "New Bad Request";
+
+	private final String newArchaiusPropertyKeyTwo = "Error404";
+	private final String newExpectedArchaiusPropertyValueTwo = "New Page not found";
+
+	private final String newArchaiusPropertyKeyThree = "Error500";
+	private final String newExpectedArchaiusPropertyValueThree = "Internal Server Error";
+
+	@Test
+	public void updatedPropertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() {
+
+		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyOne, newArchaiusPropertyKeyOne);
+
+		assertThat(prop1.get(), is(equalTo(newExpectedArchaiusPropertyValueOne)));
+
+		DynamicStringProperty prop2 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyTwo, newArchaiusPropertyKeyTwo);
+
+		assertThat(prop2.get(), is(equalTo(newExpectedArchaiusPropertyValueTwo)));
+
+		DynamicStringProperty prop3 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyThree, newArchaiusPropertyKeyThree);
+
+		assertThat(prop3.get(), is(equalTo(newExpectedArchaiusPropertyValueThree)));
+	}
+
 
    
 	
-	@Test 
-	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty(){
-		
-		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKey, propertyArchaiusKey);
-		
-		assertThat(prop1.get(),is(equalTo(expectedArchaiusPropertyValue)) );
-	}
+	
 	
 }

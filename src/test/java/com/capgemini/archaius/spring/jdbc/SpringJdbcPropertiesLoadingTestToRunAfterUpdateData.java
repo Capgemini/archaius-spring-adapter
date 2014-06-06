@@ -13,47 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.capgemini.archaius.spring;
+package com.capgemini.archaius.spring.jdbc;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 /**
  * 
  * @author skumar81
  */
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:camel/derbyPropertiesLoadingTest.xml" })
+@ContextConfiguration(locations = { "classpath:archaiusJdbc/derbyPropertiesLoadingTest.xml" })
 @ActiveProfiles("default")
-public class ArchaiusJdbcPropertiesLoadingTest {
+public class SpringJdbcPropertiesLoadingTestToRunAfterUpdateData {
 
-	@Autowired
-	@Qualifier("camel")
-	protected CamelContext context;
-
-    private final String propertyArchaiusKey = "Error400";
-    private final String expectedArchaiusPropertyValue = "Bad Request";
-
+    
+    private final String propertySpringKey = "Error404";
+    private final String expectedSpringropertyValue = "New Page not found";
+    @Value("${" + propertySpringKey + "}") private String propertyValue;
    
-	
-	@Test 
-	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty(){
-		
-		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKey, propertyArchaiusKey);
-		
-		assertThat(prop1.get(),is(equalTo(expectedArchaiusPropertyValue)) );
-	}
-	
+    @Test
+    public void propertiesAreLoadedFromDatabaseAndAccessedViaTheSpringValueAnnotation() {
+        assertThat(propertyValue, equalTo(expectedSpringropertyValue));
+    }
+    
 }

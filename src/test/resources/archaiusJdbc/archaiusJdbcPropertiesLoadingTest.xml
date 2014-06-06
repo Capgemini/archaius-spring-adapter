@@ -7,11 +7,10 @@
                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.12.2.xsd">
 
 	<!-- Config loading via Spring-Archaius -->
-	<bean
-		class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer">
-		<constructor-arg type="java.lang.String">
-			<value>driverClassName#org.apache.derby.jdbc.EmbeddedDriver||url#jdbc:derby:derbyDB;create=true||querry#select distinct property_key, property_value from	MYSITEPROPERTIES||property_key#property_key||property_value#property_value</value>
-		</constructor-arg>
+	<bean	class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer">
+		<property name="jdbcConnectionDetail" value="driverClassName#org.apache.derby.jdbc.EmbeddedDriver||url#jdbc:derby:jdbcDemoDB;create=true||username#admin||password#nimda||querry#select distinct property_key, property_value from MYSITEPROPERTIES||property_key#property_key||property_value#property_value" />
+		<property name="location" value="classpath:properties/archaiusSystem.properties" />
+	
 	</bean>
 
 	<camel:camelContext id="camel" />
