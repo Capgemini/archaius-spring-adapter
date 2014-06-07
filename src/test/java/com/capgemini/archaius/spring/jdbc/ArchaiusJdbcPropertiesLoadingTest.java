@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
-import com.capgemini.archaius.spring.jdbc.dataload.UpdateTestDataForArchaiusTest;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
@@ -55,10 +53,17 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 	private final String propertyArchaiusKeyThree = "Error500";
 	private final String expectedArchaiusPropertyValueThree = "Internal Server Error";
 	
-	
+/*	private final String newArchaiusPropertyKeyOne = "Error400";
+	private final String newExpectedArchaiusPropertyValueOne = "New Bad Request";
+
+	private final String newArchaiusPropertyKeyTwo = "Error404";
+	private final String newExpectedArchaiusPropertyValueTwo = "New Page not found";
+
+	private final String newArchaiusPropertyKeyThree = "Error500";
+	private final String newExpectedArchaiusPropertyValueThree = "New Internal Server Error";*/
 	
 	@Test
-	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() {
+	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() throws InterruptedException {
 	//	resetTestData.initializedDerby();
 
 		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyOne, propertyArchaiusKeyOne);
@@ -72,6 +77,21 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 		DynamicStringProperty prop3 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyThree, propertyArchaiusKeyThree);
 
 		assertThat(prop3.get(), is(equalTo(expectedArchaiusPropertyValueThree)));
+		
+/*		Thread.sleep(10000);
+		
+		
+		 prop1 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyOne, newArchaiusPropertyKeyOne);
+
+		assertThat(prop1.get(), is(equalTo(newExpectedArchaiusPropertyValueOne)));
+
+		prop2 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyTwo, newArchaiusPropertyKeyTwo);
+
+		assertThat(prop2.get(), is(equalTo(newExpectedArchaiusPropertyValueTwo)));
+
+		prop3 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyThree, newArchaiusPropertyKeyThree);
+
+		assertThat(prop3.get(), is(equalTo(newExpectedArchaiusPropertyValueThree)));*/
 	}
 
 }

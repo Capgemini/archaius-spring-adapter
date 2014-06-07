@@ -47,22 +47,22 @@ public class SpringPropertiesLoadingFromDBAndPropertyResourceTest {
     private final String expectedPropertyValue = "MY SECOND VAR";
     @Value("${" + propertyKey + "}") private String propertyValue;
     
+ 
     private final String propertySpringKey = "Error404";
     private final String expectedSpringropertyValue = "Page not found";
-    @Value("${" + propertySpringKey + "}") private String propertyArchaiusValue;
-
-    
+    @Value("${" + propertySpringKey + "}") private String propertyValueArchaius;
+   
+    @Test
+    public void propertiesAreLoadedFromDatabaseAndAccessedViaTheSpringValueAnnotation() {
+        assertThat(propertyValueArchaius, equalTo(expectedSpringropertyValue));
+    }
         
     @Test
     public void springPropertiesAreLoadedFromSingleFileAndAccessedViaTheSpringValueAnnotation() {
         assertThat(propertyValue, equalTo(expectedPropertyValue));
     }
    
-    @Test
-    public void propertiesAreLoadedFromDatabaseAndAccessedViaTheSpringValueAnnotation() {
-        assertThat(propertyArchaiusValue, equalTo(expectedSpringropertyValue));
-    }
-    
+ 
     
     /**
      * Of course this works as we're just testing Spring - instead we need to document that you can't do this any more

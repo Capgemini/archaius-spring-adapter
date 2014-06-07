@@ -14,8 +14,7 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 
 	/* the default framework is embedded */
 	private String framework = "embedded";
-	//private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-	private String driver = "org.apache.derby.jdbc.ClientDriver";
+	private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 	private String protocol = "jdbc:derby:";
 
 	public static void main(String [] arrs){

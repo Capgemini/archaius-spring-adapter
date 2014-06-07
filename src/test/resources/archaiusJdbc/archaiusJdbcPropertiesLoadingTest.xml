@@ -8,7 +8,7 @@
 
 	<!-- Config loading via Spring-Archaius -->
 	<bean	class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer">
-		<property name="jdbcConnectionDetail" value="driverClassName#org.apache.derby.jdbc.EmbeddedDriver||url#jdbc:derby:jdbcDemoDB;create=true||username#admin||password#nimda||querry#select distinct property_key, property_value from MYSITEPROPERTIES||property_key#property_key||property_value#property_value" />
+		<property name="jdbcConnectionLocation" value="driverClassName#org.apache.derby.jdbc.EmbeddedDriver||dbURL#jdbc:derby:jdbcDemoDB;create=true||username#admin||password#nimda||sqlQuerry#select distinct property_key, property_value from MYSITEPROPERTIES||keyColumnName#property_key||valueColumnName#property_value" />
 		<property name="location" value="classpath:properties/archaiusSystem.properties" />
 	
 	</bean>

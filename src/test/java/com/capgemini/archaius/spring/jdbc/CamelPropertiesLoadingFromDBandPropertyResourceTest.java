@@ -57,6 +57,8 @@ public class CamelPropertiesLoadingFromDBandPropertyResourceTest {
     protected CamelContext context;
     @Value("${" + propertyKey + "}") private String springPropertyValue;
     
+    @Value("${" + propertyArchaiusKey + "}") private String springArchaiusPropertyValue;
+    
     
     @Test 
 	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty(){
@@ -79,6 +81,7 @@ public class CamelPropertiesLoadingFromDBandPropertyResourceTest {
     @Test
     public void springPropertiesAreAlsoLoadedOKFromSingleFileAndAccessedViaTheSpringValueAnnotation() {
         assertThat(springPropertyValue, equalTo(expectedPropertyValue));
+        assertThat(springArchaiusPropertyValue, is(equalTo(expectedArchaiusPropertyValue)));
     }
     
     @Test

@@ -26,28 +26,8 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 	private int delayMillis = 1000;
 	private boolean ignoreDeletesFromSource = true;
 	private String jdbcConnectionDetail = null;
+	private String jdbcConnectionLocation = null;
 	private Map<String, String> jdbcConnectionDetailMap = null;
-
-	public ArchaiusJdbcBridgePropertyPlaceholderConfigurer() {
-	}
-
-	public ArchaiusJdbcBridgePropertyPlaceholderConfigurer(String jdbcConnectionDetail)
-			throws Exception {
-		jdbcConnectionDetailMap = createDatabaseKeyValueMap(jdbcConnectionDetail);
-
-		DynamicConfiguration configuration = propertyPlaceholderSupport
-				.setJdbcResourceAsPropetiesSource(jdbcConnectionDetailMap);
-
-		super.setProperties(ConfigurationConverter.getProperties(configuration));
-
-	}
-
-	@Override
-	protected String resolvePlaceholder(String placeholder, Properties props,
-			int systemPropertiesMode) {
-		return propertyPlaceholderSupport.resolvePlaceholder(placeholder,
-				props, systemPropertiesMode);
-	}
 
 	@Override
 	public void setLocation(Resource location) {
@@ -104,6 +84,60 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 		}
 
 	}
+
+	public void setJdbcConnectionDetail(String jdbcConnectionDetail) throws Exception {
+		if (jdbcConnectionDetail != null) {
+			jdbcConnectionDetailMap = createDatabaseKeyValueMap(jdbcConnectionDetail);
+
+			DynamicConfiguration configuration = propertyPlaceholderSupport
+					.setJdbcResourceAsPropetiesSource(jdbcConnectionDetailMap, initialDelayMillis, delayMillis, ignoreDeletesFromSource);
+
+			super.setProperties(ConfigurationConverter.getProperties(configuration));
+		}
+	}
+
+	public void setJdbcConnectionLocation(String jdbcConnectionLocation) throws Exception{
+		if (jdbcConnectionLocation != null) {
+			this.jdbcConnectionLocation = jdbcConnectionLocation;
+			jdbcConnectionDetailMap = createDatabaseKeyValueMap(jdbcConnectionLocation);
+		}
+		
+	}
+	
+	private Map<String, String> createDatabaseKeyValueMap(String jdbcUri) throws Exception {
+		Map<String, String> jdbcMap = new HashMap<>();
+
+		String delims = "[|][|]";
+		
+		if(jdbcUri==null){
+			
+			LOGGER.info("Argument passed Cant be null. ");
+			LOGGER.error("The argument passes is not correct");
+			LOGGER.error("Argument format to be passes is : driverClassName=<com.mysql.jdbc.Driver>||dbURL#<jdbc:mysql://localhost:3306/java>||username#<root>||password=<password>||sqlQuerry#s<elect distinct property_key, property_value from MySiteProperties>||keyColumnName#<property_key>||valueColumnName#<property_value>");
+			throw new Exception("Parameter passed are not valid. See the Error log for more detail");
+		}
+		
+		String[] tokens = jdbcUri.split(delims);
+
+
+		if (tokens.length != 7) {
+			LOGGER.info("Argument passed : " + jdbcUri);
+			LOGGER.error("The argument passes is not correct");
+			LOGGER.error("Argument format to be passes is : driverClassName=<com.mysql.jdbc.Driver>||dbURL#<jdbc:mysql://localhost:3306/java>||username#<root>||password=<password>||sqlQuerry#s<elect distinct property_key, property_value from MySiteProperties>||keyColumnName#<property_key>||valueColumnName#<property_value>");
+			throw new Exception("Parameter passed are not valid. See the Error log for more detail");
+		} else {
+
+			delims = "[#]";
+			for (String keyValue : tokens) {
+
+				String[] keyAndValue = keyValue.split(delims);
+				jdbcMap.put(keyAndValue[0], keyAndValue[1]);
+			}
+		}
+		return jdbcMap;
+	}
+	
+	
 	
 
 	@Override
@@ -142,45 +176,19 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 		this.ignoreDeletesFromSource = ignoreDeletesFromSource;
 	}
 
-	
-	public void setJdbcConnectionDetail(String jdbcConnectionDetail) throws Exception {
-		if (jdbcConnectionDetail != null) {
-			this.jdbcConnectionDetail = jdbcConnectionDetail;
-			jdbcConnectionDetailMap = createDatabaseKeyValueMap(jdbcConnectionDetail);
-		}
+	@Override
+	protected String resolvePlaceholder(String placeholder, Properties props,
+			int systemPropertiesMode) {
+		return propertyPlaceholderSupport.resolvePlaceholder(placeholder,
+				props, systemPropertiesMode);
 	}
 	
-	private Map<String, String> createDatabaseKeyValueMap(String jdbcUri) throws Exception {
-		Map<String, String> jdbcMap = new HashMap<>();
-
-		String delims = "[|][|]";
-		
-		if(jdbcUri==null){
-			
-			LOGGER.info("Argument passed Cant be null. ");
-			LOGGER.error("The argument passes is not correct");
-			LOGGER.error("Argument format to be passes is : driverClassName=<com.mysql.jdbc.Driver>||url#<jdbc:mysql://localhost:3306/java>||username#<root>||password=<password>||querry#s<elect distinct property_key, property_value from MySiteProperties>||property_key#<property_key>||property_value#<property_value>");
-			throw new Exception("Parameter passed are not valid. See the Error log for more detail");
-		}
-		
-		String[] tokens = jdbcUri.split(delims);
-
-
-		if (tokens.length != 7) {
-			LOGGER.info("Argument passed : " + jdbcUri);
-			LOGGER.error("The argument passes is not correct");
-			LOGGER.error("Argument format to be passes is : driverClassName=<com.mysql.jdbc.Driver>||url#<jdbc:mysql://localhost:3306/java>||username#<root>||password=<password>||querry#s<elect distinct property_key, property_value from MySiteProperties>||property_key#<property_key>||property_value#<property_value>");
-			throw new Exception("Parameter passed are not valid. See the Error log for more detail");
-		} else {
-
-			delims = "[#]";
-			for (String keyValue : tokens) {
-
-				String[] keyAndValue = keyValue.split(delims);
-				jdbcMap.put(keyAndValue[0], keyAndValue[1]);
-			}
-		}
-		return jdbcMap;
+	public String getJdbcConnectionLocation() {
+		return jdbcConnectionLocation;
+	}
+	
+	public String getJdbcConnectionDetail() {
+		return jdbcConnectionDetail;
 	}
 
 }

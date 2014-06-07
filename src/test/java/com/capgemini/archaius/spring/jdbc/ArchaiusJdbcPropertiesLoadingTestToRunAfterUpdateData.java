@@ -50,7 +50,7 @@ public class ArchaiusJdbcPropertiesLoadingTestToRunAfterUpdateData {
 	private final String newExpectedArchaiusPropertyValueTwo = "New Page not found";
 
 	private final String newArchaiusPropertyKeyThree = "Error500";
-	private final String newExpectedArchaiusPropertyValueThree = "Internal Server Error";
+	private final String newExpectedArchaiusPropertyValueThree = "New Internal Server Error";
 
 	@Test
 	public void updatedPropertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() {
