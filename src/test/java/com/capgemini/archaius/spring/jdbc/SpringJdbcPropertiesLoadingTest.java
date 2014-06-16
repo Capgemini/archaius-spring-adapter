@@ -15,18 +15,21 @@
  */
 package com.capgemini.archaius.spring.jdbc;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
+import com.capgemini.archaius.spring.jdbc.dataload.UpdateTestDataForArchaiusTest;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * 
- * @author skumar81
+ * @author Sanjay Kumar
  */
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:archaiusJdbc/derbyPropertiesLoadingTest.xml" })
@@ -39,8 +42,25 @@ public class SpringJdbcPropertiesLoadingTest {
     @Value("${" + propertySpringKey + "}") private String propertyValue;
    
     @Test
-    public void propertiesAreLoadedFromDatabaseAndAccessedViaTheSpringValueAnnotation() {
-        assertThat(propertyValue, equalTo(expectedSpringropertyValue));
+    public void propertiesAreLoadedFromDatabaseAndAccessedViaTheSpringValueAnnotation() throws InterruptedException {
+        //property loaded at startup.
+    	assertThat(propertyValue, equalTo(expectedSpringropertyValue));
+        
+    	// when updating the data in DB
+		
+     	UpdateTestDataForArchaiusTest updateTestData=new UpdateTestDataForArchaiusTest();
+     	updateTestData.initializedDerby();
+     	Thread.sleep(100);
+     	
+     	//then  still spring context will have old data not the new values
+     	
+     	assertThat(propertyValue, equalTo(expectedSpringropertyValue));
+     	
+     	// call to reset the values ..so that other test don't fail
+     	ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
+     	resetTestData.initializedDerby();
+     	Thread.sleep(100);
+        
     }
     
 }

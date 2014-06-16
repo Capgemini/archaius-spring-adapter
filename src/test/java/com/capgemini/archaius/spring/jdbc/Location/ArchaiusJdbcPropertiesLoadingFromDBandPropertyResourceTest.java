@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.capgemini.archaius.spring.jdbc;
+package com.capgemini.archaius.spring.jdbc.Location;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -35,12 +35,12 @@ import com.netflix.config.DynamicStringProperty;
 
 /**
  * 
- * @author Sanjay Kumar.
+ * @author skumar81
  */
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:archaiusJdbc/derbyPropertiesLoadingTest.xml" })
+@ContextConfiguration(locations = { "classpath:archaiusJdbc/archaiusJdbcPropertiesLoadingTest.xml" })
 @ActiveProfiles("default")
-public class ArchaiusJdbcPropertiesLoadingTest {
+public class ArchaiusJdbcPropertiesLoadingFromDBandPropertyResourceTest {
 
 	@Autowired
 	@Qualifier("camel")
@@ -69,10 +69,7 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 	@Test
 	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() throws InterruptedException {
 		
-		// when  initial value at set in DB
-		ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
-		resetTestData.initializedDerby();
-		Thread.sleep(100);
+		// when  initial value loaded at context loading 
 
 		// then  initial value should be retrieved from DB.
 		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyOne, propertyArchaiusKeyOne);
@@ -105,11 +102,10 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 
 		assertThat(prop3.get(), is(equalTo(newExpectedArchaiusPropertyValueThree)));
 		
-		// call to reset the values ..so that other test don't fail
-		resetTestData=new ResetTestDataForArchaiusTest();
+        // call to reset the values ..so that other test don't fail
+		ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
 		resetTestData.initializedDerby();
 		Thread.sleep(100);
 		
 	}
-
 }

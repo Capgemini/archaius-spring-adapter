@@ -8,12 +8,8 @@
 
 	<!-- Config loading via Spring-Archaius -->
 	<bean	class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer">
-		<property name="ignoreResourceNotFound" value="true" /> <!-- This must come before the locations -->
-        <property name="initialDelayMillis" value="1" />
-        <property name="delayMillis" value="10" />
-        <property name="ignoreDeletesFromSource" value="false" />
 		<property name="jdbcConnectionLocation" value="driverClassName#org.apache.derby.jdbc.EmbeddedDriver||dbURL#jdbc:derby:jdbcDemoDB;create=true||username#admin||password#nimda||sqlQuerry#select distinct property_key, property_value from MYSITEPROPERTIES||keyColumnName#property_key||valueColumnName#property_value" />
-		<property name="location" value="classpath:properties/archaiusSystem.properties" />
+		<property name="location" value="classpath:properties/archaiusPropertyOverloading.properties" />
 	
 	</bean>
 

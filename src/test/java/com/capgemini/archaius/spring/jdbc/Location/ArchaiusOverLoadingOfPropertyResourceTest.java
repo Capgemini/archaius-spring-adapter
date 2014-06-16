@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.capgemini.archaius.spring.jdbc;
+package com.capgemini.archaius.spring.jdbc.Location;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -29,18 +29,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
-import com.capgemini.archaius.spring.jdbc.dataload.UpdateTestDataForArchaiusTest;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 /**
  * 
- * @author Sanjay Kumar.
+ * @author skumar81
  */
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:archaiusJdbc/derbyPropertiesLoadingTest.xml" })
+@ContextConfiguration(locations = { "classpath:archaiusJdbc/archaiusPropertiesOverLoadingTest.xml" })
 @ActiveProfiles("default")
-public class ArchaiusJdbcPropertiesLoadingTest {
+public class ArchaiusOverLoadingOfPropertyResourceTest {
 
 	@Autowired
 	@Qualifier("camel")
@@ -50,66 +49,34 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 	private final String expectedArchaiusPropertyValueOne = "Bad Request";
 
 	private final String propertyArchaiusKeyTwo = "Error404";
-	private final String expectedArchaiusPropertyValueTwo = "Page not found";
+	private final String expectedArchaiusPropertyValueTwo = "Page not found from Property file";
 
 	private final String propertyArchaiusKeyThree = "Error500";
 	private final String expectedArchaiusPropertyValueThree = "Internal Server Error";
 	
-	private final String newArchaiusPropertyKeyOne = "Error400";
-	private final String newExpectedArchaiusPropertyValueOne = "New Bad Request";
 
-	private final String newArchaiusPropertyKeyTwo = "Error404";
-	private final String newExpectedArchaiusPropertyValueTwo = "New Page not found";
-
-	private final String newArchaiusPropertyKeyThree = "Error500";
-	private final String newExpectedArchaiusPropertyValueThree = "New Internal Server Error";
-	
-	
-	
 	@Test
 	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() throws InterruptedException {
-		
-		// when  initial value at set in DB
-		ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
-		resetTestData.initializedDerby();
-		Thread.sleep(100);
 
-		// then  initial value should be retrieved from DB.
 		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyOne, propertyArchaiusKeyOne);
 
 		assertThat(prop1.get(), is(equalTo(expectedArchaiusPropertyValueOne)));
 
-		DynamicStringProperty prop2 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyTwo, propertyArchaiusKeyTwo);
-
-		assertThat(prop2.get(), is(equalTo(expectedArchaiusPropertyValueTwo)));
-
+		
 		DynamicStringProperty prop3 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyThree, propertyArchaiusKeyThree);
 
 		assertThat(prop3.get(), is(equalTo(expectedArchaiusPropertyValueThree)));
 		
-		// when  updated the value in db
-		UpdateTestDataForArchaiusTest updateTestData=new UpdateTestDataForArchaiusTest();
-		updateTestData.initializedDerby();
-		Thread.sleep(100);
+		// value of Error404 is loaded from property file and overriding the value read from jdbc.
+		DynamicStringProperty prop2 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyTwo, propertyArchaiusKeyTwo);
+
+		assertThat(prop2.get(), is(equalTo(expectedArchaiusPropertyValueTwo)));
 		
-		// then   new value should be reflected.
-		prop1 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyOne, newArchaiusPropertyKeyOne);
-
-		assertThat(prop1.get(), is(equalTo(newExpectedArchaiusPropertyValueOne)));
-
-		prop2 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyTwo, newArchaiusPropertyKeyTwo);
-
-		assertThat(prop2.get(), is(equalTo(newExpectedArchaiusPropertyValueTwo)));
-
-		prop3 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyThree, newArchaiusPropertyKeyThree);
-
-		assertThat(prop3.get(), is(equalTo(newExpectedArchaiusPropertyValueThree)));
-		
-		// call to reset the values ..so that other test don't fail
-		resetTestData=new ResetTestDataForArchaiusTest();
+        // call to reset the values ..so that other test don't fail
+		ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
 		resetTestData.initializedDerby();
 		Thread.sleep(100);
-		
+
 	}
 
 }

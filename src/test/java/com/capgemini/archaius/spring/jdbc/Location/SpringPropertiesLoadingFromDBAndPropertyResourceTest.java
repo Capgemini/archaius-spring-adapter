@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.capgemini.archaius.spring.jdbc;
+package com.capgemini.archaius.spring.jdbc.Location;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,13 +48,13 @@ public class SpringPropertiesLoadingFromDBAndPropertyResourceTest {
     @Value("${" + propertyKey + "}") private String propertyValue;
     
  
-    private final String propertySpringKey = "Error404";
-    private final String expectedSpringropertyValue = "Page not found";
-    @Value("${" + propertySpringKey + "}") private String propertyValueArchaius;
+    private final String propertyArchaiusKey = "Error404";
+    private final String expectedSpringPropertyArchaiusValue = "Page not found";
+    @Value("${" + propertyArchaiusKey + "}") private String propertyArchaiusValue;
    
     @Test
     public void propertiesAreLoadedFromDatabaseAndAccessedViaTheSpringValueAnnotation() {
-        assertThat(propertyValueArchaius, equalTo(expectedSpringropertyValue));
+        assertThat(propertyArchaiusValue, equalTo(expectedSpringPropertyArchaiusValue));
     }
         
     @Test

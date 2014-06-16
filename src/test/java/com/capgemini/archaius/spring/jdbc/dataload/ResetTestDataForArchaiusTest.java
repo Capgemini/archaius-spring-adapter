@@ -15,21 +15,16 @@ import java.util.Properties;
  * Error404 = Page not found 
  * Error400 = Bad Request
  * 
- * @author skumar81
+ * @author Sanjay Kumar
  *
  */
 public class ResetTestDataForArchaiusTest {
 
 
 	/* the default framework is embedded */
-	private String framework = "embedded";
 	private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 	private String protocol = "jdbc:derby:";
 
-	public static void main(String [] arrs){
-		ResetTestDataForArchaiusTest dpt=new ResetTestDataForArchaiusTest();
-		dpt.initializedDerby();
-	}
 	
 	public void initializedDerby() {
 		loadDriver();
@@ -87,7 +82,7 @@ public class ResetTestDataForArchaiusTest {
             psUpdate = conn.prepareStatement(
                         "update MYSITEPROPERTIES set property_key=?, property_value=? where property_key=?");
             statements.add(psUpdate);
-
+            
             psUpdate.setString(1, "Error500");
             psUpdate.setString(2, "Internal Server Error");
             psUpdate.setString(3, "Error500");
@@ -105,34 +100,19 @@ public class ResetTestDataForArchaiusTest {
             psUpdate.setString(3, "Error400");
             psUpdate.executeUpdate();
             System.out.println("Updated Error400");
-
+            
+            conn.commit();
 			
 			/*
 			 * We select the rows and verify the results.
 			 */
 			rs = s.executeQuery("SELECT property_key, property_value FROM MYSITEPROPERTIES");
 
-			/*
-			 * we expect the first returned column to be an integer (num), and
-			 * second to be a String (addr). Rows are sorted by street number
-			 * (num).
-			 * 
-			 * Normally, it is best to use a pattern of while(rs.next()) { // do
-			 * something with the result set } to process all returned rows, but
-			 * we are only expecting two rows this time, and want the
-			 * verification code to be easy to comprehend, so we use a different
-			 * pattern.
-			 */
-
 			while(rs.next()) {
 				
 				System.out.print("property_key : "+rs.getString(1));
-				System.out.println("property_value"+rs.getString(2));
+				System.out.println("  and  property_value : "+rs.getString(2));
 			}
-
-			// delete the table
-			//s.execute("drop table MySiteProperties");
-			//System.out.println("Dropped table MySiteProperties");
 
 			/*
 			 * We commit the transaction. Any changes will be persisted to the
@@ -141,49 +121,6 @@ public class ResetTestDataForArchaiusTest {
 			conn.commit();
 			System.out.println("Committed the transaction");
 
-			/*
-			 * In embedded mode, an application should shut down the database.
-			 * If the application fails to shut down the database, Derby will
-			 * not perform a checkpoint when the JVM shuts down. This means that
-			 * it will take longer to boot (connect to) the database the next
-			 * time, because Derby needs to perform a recovery operation.
-			 * 
-			 * It is also possible to shut down the Derby system/engine, which
-			 * automatically shuts down all booted databases.
-			 * 
-			 * Explicitly shutting down the database or the Derby engine with
-			 * the connection URL is preferred. This style of shutdown will
-			 * always throw an SQLException.
-			 * 
-			 * Not shutting down when in a client environment, see method
-			 * Javadoc.
-			 */
-
-			if (framework.equals("embedded")) {
-				try {
-					// the shutdown=true attribute shuts down Derby
-					DriverManager.getConnection("jdbc:derby:;shutdown=true");
-
-					// To shut down a specific database only, but keep the
-					// engine running (for example for connecting to other
-					// databases), specify a database in the connection URL:
-					// DriverManager.getConnection("jdbc:derby:" + dbName +
-					// ";shutdown=true");
-				} catch (SQLException se) {
-					if (((se.getErrorCode() == 50000) && ("XJ015".equals(se
-							.getSQLState())))) {
-						// we got the expected exception
-						System.out.println("Derby shut down normally");
-						// Note that for single database shutdown, the expected
-						// SQL state is "08006", and the error code is 45000.
-					} else {
-						// if the error code or SQLState is different, we have
-						// an unexpected exception (shutdown failed)
-						System.err.println("Derby did not shut down normally");
-						printSQLException(se);
-					}
-				}
-			}
 		} catch (SQLException sqle) {
 			printSQLException(sqle);
 		} finally {

@@ -119,7 +119,7 @@ public class MainClassToRunBeforeRunningArchaiusTest {
 			while(rs.next()) {
 				
 				System.out.print("property_key : "+rs.getString(1));
-				System.out.println("property_value"+rs.getString(2));
+				System.out.println("  and property_value : "+rs.getString(2));
 			}
 
 			// delete the table
