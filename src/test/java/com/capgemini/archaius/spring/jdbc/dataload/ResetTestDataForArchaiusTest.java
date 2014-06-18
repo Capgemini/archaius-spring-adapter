@@ -9,6 +9,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class reset the test data for Archaius to initial value.
  * Error500 = Internal Server Error
@@ -20,11 +23,10 @@ import java.util.Properties;
  */
 public class ResetTestDataForArchaiusTest {
 
-
 	/* the default framework is embedded */
 	private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-	private String protocol = "jdbc:derby:";
-
+	private String protocol = "jdbc:derby:memory:";
+	public Logger LOGGER = LoggerFactory.getLogger(ResetTestDataForArchaiusTest.class);
 	
 	public void initializedDerby() {
 		loadDriver();
@@ -38,29 +40,16 @@ public class ResetTestDataForArchaiusTest {
 		ResultSet rs = null;
 
 		try {
-			Properties props = new Properties(); // connection properties
-			// providing a user name and password is optional in the embedded
-			// and derbyclient frameworks
+			Properties props = new Properties(); 
 			props.put("user", "admin");
 			props.put("password", "nimda");
 
-			
 			String dbName = "jdbcDemoDB"; // the name of the database
 
-			/*
-			 * This connection specifies create=true in the connection URL to
-			 * cause the database to be created when connecting for the first
-			 * time. To remove the database, remove the directory derbyDB (the
-			 * same as the database name) and its contents.
-			 * 
-			 * The directory derbyDB will be created under the directory that
-			 * the system property derby.system.home points to, or the current
-			 * directory (user.dir) if derby.system.home is not set.
-			 */
 			conn = DriverManager.getConnection(protocol + dbName
 					+ ";create=false",props);
 
-			System.out.println("Connected to and created database " + dbName);
+			LOGGER.info("Connected to and created database " + dbName);
 
 			// We want to control transactions manually. Autocommit is on by
 			// default in JDBC.
@@ -73,10 +62,7 @@ public class ResetTestDataForArchaiusTest {
 			s = conn.createStatement();
 			statements.add(s);
 
-			// We create a table...
-			//s.execute("create table MYSITEPROPERTIES(property_key varchar(40), property_value varchar(40))");
-			System.out.println("Created table MySiteProperties");
-
+			LOGGER.info("Created table MySiteProperties");
 		
 			// Let's update some rows as well...
             psUpdate = conn.prepareStatement(
@@ -87,19 +73,19 @@ public class ResetTestDataForArchaiusTest {
             psUpdate.setString(2, "Internal Server Error");
             psUpdate.setString(3, "Error500");
             psUpdate.executeUpdate();
-            System.out.println("Updated Error500");
+            LOGGER.info("Updated Error500");
 
             psUpdate.setString(1, "Error404");
             psUpdate.setString(2, "Page not found");
             psUpdate.setString(3, "Error404");
             psUpdate.executeUpdate();
-            System.out.println("Updated Error404");
+            LOGGER.info("Updated Error404");
 
             psUpdate.setString(1, "Error400");
             psUpdate.setString(2, "Bad Request");
             psUpdate.setString(3, "Error400");
             psUpdate.executeUpdate();
-            System.out.println("Updated Error400");
+            LOGGER.info("Updated Error400");
             
             conn.commit();
 			
@@ -111,7 +97,7 @@ public class ResetTestDataForArchaiusTest {
 			while(rs.next()) {
 				
 				System.out.print("property_key : "+rs.getString(1));
-				System.out.println("  and  property_value : "+rs.getString(2));
+				LOGGER.info("  and  property_value : "+rs.getString(2));
 			}
 
 			/*
@@ -119,7 +105,7 @@ public class ResetTestDataForArchaiusTest {
 			 * database now.
 			 */
 			conn.commit();
-			System.out.println("Committed the transaction");
+			LOGGER.info("Committed the transaction");
 
 		} catch (SQLException sqle) {
 			printSQLException(sqle);
@@ -168,30 +154,30 @@ public class ResetTestDataForArchaiusTest {
 
 		try {
 			Class.forName(driver).newInstance();
-			System.out.println("Loaded the appropriate driver");
+			LOGGER.info("Loaded the appropriate driver");
 		} catch (ClassNotFoundException cnfe) {
-			System.err.println("\nUnable to load the JDBC driver " + driver);
-			System.err.println("Please check your CLASSPATH.");
+			LOGGER.error("\nUnable to load the JDBC driver " + driver);
+			LOGGER.error("Please check your CLASSPATH.");
 			cnfe.printStackTrace(System.err);
 		} catch (InstantiationException ie) {
-			System.err.println("\nUnable to instantiate the JDBC driver "
+			LOGGER.error("\nUnable to instantiate the JDBC driver "
 					+ driver);
 			ie.printStackTrace(System.err);
 		} catch (IllegalAccessException iae) {
-			System.err.println("\nNot allowed to access the JDBC driver "
+			LOGGER.error("\nNot allowed to access the JDBC driver "
 					+ driver);
 			iae.printStackTrace(System.err);
 		}
 	}
 
-	public static void printSQLException(SQLException e) {
+	public void printSQLException(SQLException e) {
 		// Unwraps the entire exception chain to unveil the real cause of the
 		// Exception.
 		while (e != null) {
-			System.err.println("\n----- SQLException -----");
-			System.err.println("  SQL State:  " + e.getSQLState());
-			System.err.println("  Error Code: " + e.getErrorCode());
-			System.err.println("  Message:    " + e.getMessage());
+			LOGGER.error("\n----- SQLException -----");
+			LOGGER.error("  SQL State:  " + e.getSQLState());
+			LOGGER.error("  Error Code: " + e.getErrorCode());
+			LOGGER.error("  Message:    " + e.getMessage());
 			// for stack traces, refer to derby.log or uncomment this:
 			// e.printStackTrace(System.err);
 			e = e.getNextException();

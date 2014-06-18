@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.capgemini.archaius.spring.jdbc.dataload.DeleteTestDataAndSchemaForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
@@ -53,7 +54,6 @@ public class ArchaiusOverLoadingOfPropertyResourceTest {
 
 	private final String propertyArchaiusKeyThree = "Error500";
 	private final String expectedArchaiusPropertyValueThree = "Internal Server Error";
-	
 
 	@Test
 	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() throws InterruptedException {
@@ -61,7 +61,6 @@ public class ArchaiusOverLoadingOfPropertyResourceTest {
 		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyOne, propertyArchaiusKeyOne);
 
 		assertThat(prop1.get(), is(equalTo(expectedArchaiusPropertyValueOne)));
-
 		
 		DynamicStringProperty prop3 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyThree, propertyArchaiusKeyThree);
 
@@ -72,10 +71,14 @@ public class ArchaiusOverLoadingOfPropertyResourceTest {
 
 		assertThat(prop2.get(), is(equalTo(expectedArchaiusPropertyValueTwo)));
 		
-        // call to reset the values ..so that other test don't fail
-		ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
-		resetTestData.initializedDerby();
+		//resetting the data to initial value
+		ResetTestDataForArchaiusTest resetData=new ResetTestDataForArchaiusTest();
+		resetData.initializedDerby();
 		Thread.sleep(100);
+		
+		//shutting down the in memory database.
+		DeleteTestDataAndSchemaForArchaiusTest deleteDB= new DeleteTestDataAndSchemaForArchaiusTest();
+		deleteDB.deleteDatabase();
 
 	}
 

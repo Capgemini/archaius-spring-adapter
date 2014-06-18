@@ -54,7 +54,6 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 			LOGGER.error("Problem setting the location.", ex);
 			throw new RuntimeException("Problem setting the location.", ex);
 		}
-
 	}
 
 	@Override
@@ -82,7 +81,6 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 			LOGGER.error("Problem setting the locations", ex);
 			throw new RuntimeException("Problem setting the locations.", ex);
 		}
-
 	}
 
 	public void setJdbcConnectionDetail(String jdbcConnectionDetail) throws Exception {
@@ -101,7 +99,6 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 			this.jdbcConnectionLocation = jdbcConnectionLocation;
 			jdbcConnectionDetailMap = createDatabaseKeyValueMap(jdbcConnectionLocation);
 		}
-		
 	}
 	
 	private Map<String, String> createDatabaseKeyValueMap(String jdbcUri) throws Exception {
@@ -118,7 +115,6 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 		}
 		
 		String[] tokens = jdbcUri.split(delims);
-
 
 		if (tokens.length != 7) {
 			LOGGER.info("Argument passed : " + jdbcUri);
@@ -137,9 +133,6 @@ public class ArchaiusJdbcBridgePropertyPlaceholderConfigurer extends
 		return jdbcMap;
 	}
 	
-	
-	
-
 	@Override
 	public void setIgnoreResourceNotFound(boolean setting) {
 		ignoreResourceNotFound = setting;

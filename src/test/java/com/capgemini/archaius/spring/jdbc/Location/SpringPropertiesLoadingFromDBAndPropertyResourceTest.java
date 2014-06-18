@@ -39,9 +39,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ContextConfiguration(locations = {"classpath:archaiusJdbc/archaiusJdbcPropertiesLoadingTest.xml"})
 @ActiveProfiles("default")
 public class SpringPropertiesLoadingFromDBAndPropertyResourceTest {
-
-    // TODO Spring @Configuration tests
-    // TODO Spring @Environment.getProperty tests
     
     private final String propertyKey = "var2";
     private final String expectedPropertyValue = "MY SECOND VAR";
@@ -61,8 +58,6 @@ public class SpringPropertiesLoadingFromDBAndPropertyResourceTest {
     public void springPropertiesAreLoadedFromSingleFileAndAccessedViaTheSpringValueAnnotation() {
         assertThat(propertyValue, equalTo(expectedPropertyValue));
     }
-   
- 
     
     /**
      * Of course this works as we're just testing Spring - instead we need to document that you can't do this any more
@@ -79,5 +74,4 @@ public class SpringPropertiesLoadingFromDBAndPropertyResourceTest {
         assertThat(props.containsKey(propertyKey), is(true));
     }
     
-   
 }

@@ -15,18 +15,21 @@
  */
 package com.capgemini.archaius.spring.jdbc;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.capgemini.archaius.spring.jdbc.dataload.DeleteTestDataAndSchemaForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.UpdateTestDataForArchaiusTest;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * 
  * @author Sanjay Kumar
@@ -36,31 +39,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ActiveProfiles("default")
 public class SpringJdbcPropertiesLoadingTest {
 
-    
     private final String propertySpringKey = "Error404";
     private final String expectedSpringropertyValue = "Page not found";
     @Value("${" + propertySpringKey + "}") private String propertyValue;
    
     @Test
     public void propertiesAreLoadedFromDatabaseAndAccessedViaTheSpringValueAnnotation() throws InterruptedException {
+    	
         //property loaded at startup.
     	assertThat(propertyValue, equalTo(expectedSpringropertyValue));
         
     	// when updating the data in DB
-		
      	UpdateTestDataForArchaiusTest updateTestData=new UpdateTestDataForArchaiusTest();
      	updateTestData.initializedDerby();
-     	Thread.sleep(100);
-     	
+        	
      	//then  still spring context will have old data not the new values
-     	
      	assertThat(propertyValue, equalTo(expectedSpringropertyValue));
      	
-     	// call to reset the values ..so that other test don't fail
-     	ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
-     	resetTestData.initializedDerby();
-     	Thread.sleep(100);
-        
+    	//resetting the data to initial value
+		ResetTestDataForArchaiusTest resetData=new ResetTestDataForArchaiusTest();
+		resetData.initializedDerby();
+		Thread.sleep(100);
+		
+     	//shutting down the in memory database.
+     	DeleteTestDataAndSchemaForArchaiusTest deleteDB= new DeleteTestDataAndSchemaForArchaiusTest();
+		deleteDB.deleteDatabase();
     }
     
 }

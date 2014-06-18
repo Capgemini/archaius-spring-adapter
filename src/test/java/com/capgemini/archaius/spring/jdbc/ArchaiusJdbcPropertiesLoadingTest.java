@@ -23,11 +23,14 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.capgemini.archaius.spring.jdbc.dataload.DeleteTestDataAndSchemaForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.UpdateTestDataForArchaiusTest;
 import com.netflix.config.DynamicPropertyFactory;
@@ -64,6 +67,8 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 	private final String newArchaiusPropertyKeyThree = "Error500";
 	private final String newExpectedArchaiusPropertyValueThree = "New Internal Server Error";
 	
+	public Logger LOGGER = LoggerFactory.getLogger(ArchaiusJdbcPropertiesLoadingTest.class);
+	
 	
 	
 	@Test
@@ -74,6 +79,7 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 		resetTestData.initializedDerby();
 		Thread.sleep(100);
 
+		LOGGER.info("runnig test for initial values");
 		// then  initial value should be retrieved from DB.
 		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyOne, propertyArchaiusKeyOne);
 
@@ -92,6 +98,7 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 		updateTestData.initializedDerby();
 		Thread.sleep(100);
 		
+		LOGGER.info("runnig test for updated values");
 		// then   new value should be reflected.
 		prop1 = DynamicPropertyFactory.getInstance().getStringProperty(newArchaiusPropertyKeyOne, newArchaiusPropertyKeyOne);
 
@@ -105,10 +112,14 @@ public class ArchaiusJdbcPropertiesLoadingTest {
 
 		assertThat(prop3.get(), is(equalTo(newExpectedArchaiusPropertyValueThree)));
 		
-		// call to reset the values ..so that other test don't fail
-		resetTestData=new ResetTestDataForArchaiusTest();
-		resetTestData.initializedDerby();
+		//resetting the data to initial value
+		ResetTestDataForArchaiusTest resetData=new ResetTestDataForArchaiusTest();
+		resetData.initializedDerby();
 		Thread.sleep(100);
+		
+		//shutting down the in memory database.
+		DeleteTestDataAndSchemaForArchaiusTest deleteDB= new DeleteTestDataAndSchemaForArchaiusTest();
+		deleteDB.deleteDatabase();
 		
 	}
 

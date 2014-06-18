@@ -24,6 +24,8 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,15 +45,12 @@ import com.netflix.config.DynamicStringProperty;
 @ActiveProfiles("default")
 public class CamelPropertiesLoadingFromDBandPropertyResourceTest {
 
-    // TODO: test non-existent spring properites loaded via @Value
-    
     private final String propertyKey = "var2";
     private final String nonExistentPropertyKey = "bad_key";
     private final String expectedPropertyValue = "MY SECOND VAR";
     private final String propertyArchaiusKey = "Error400";
     private final String expectedArchaiusPropertyValue = "Bad Request";
-
-
+    
     @Autowired
     @Qualifier("camel")
     protected CamelContext context;
@@ -59,11 +58,9 @@ public class CamelPropertiesLoadingFromDBandPropertyResourceTest {
     
     @Value("${" + propertyArchaiusKey + "}") private String springArchaiusPropertyValue;
     
-    
     @Test 
 	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() throws InterruptedException{
 		
-    	Thread.sleep(100);
 		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKey, propertyArchaiusKey);
 		
 		assertThat(prop1.get(),is(equalTo(expectedArchaiusPropertyValue)) );
@@ -73,7 +70,6 @@ public class CamelPropertiesLoadingFromDBandPropertyResourceTest {
     @Test
     public void camelPropertiesAreLoadedFromSingleFileAndAccessedViaTheCamelValueAnnotation() throws Exception {
     	
-    	Thread.sleep(100);
         String camelPropertyValue = context.resolvePropertyPlaceholders("{{" + propertyKey + "}}");
         
         assertThat("The context cannot be null.", context != null);
@@ -82,14 +78,12 @@ public class CamelPropertiesLoadingFromDBandPropertyResourceTest {
     
     @Test
     public void springPropertiesAreAlsoLoadedOKFromSingleFileAndAccessedViaTheSpringValueAnnotation() throws InterruptedException {
-    	Thread.sleep(100);
         assertThat(springPropertyValue, equalTo(expectedPropertyValue));
         assertThat(springArchaiusPropertyValue, is(equalTo(expectedArchaiusPropertyValue)));
     }
     
     @Test
     public void nonExistentPropertiesWhenrequestedViaCamelThrowIllegalArgumentExceptions() throws InterruptedException {
-    	Thread.sleep(100);
         try {
             context.resolvePropertyPlaceholders("{{" + nonExistentPropertyKey + "}}");
             fail("An IllegalArgument Exception shound be thrown");

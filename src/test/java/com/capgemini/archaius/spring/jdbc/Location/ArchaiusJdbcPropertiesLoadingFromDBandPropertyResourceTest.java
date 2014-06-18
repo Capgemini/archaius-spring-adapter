@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.capgemini.archaius.spring.jdbc.dataload.DeleteTestDataAndSchemaForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.UpdateTestDataForArchaiusTest;
 import com.netflix.config.DynamicPropertyFactory;
@@ -70,7 +71,6 @@ public class ArchaiusJdbcPropertiesLoadingFromDBandPropertyResourceTest {
 	public void propertiesAreLoadedFromDatabaseAndAccessedViaArchaiusDynamicStringProperty() throws InterruptedException {
 		
 		// when  initial value loaded at context loading 
-
 		// then  initial value should be retrieved from DB.
 		DynamicStringProperty prop1 = DynamicPropertyFactory.getInstance().getStringProperty(propertyArchaiusKeyOne, propertyArchaiusKeyOne);
 
@@ -84,7 +84,7 @@ public class ArchaiusJdbcPropertiesLoadingFromDBandPropertyResourceTest {
 
 		assertThat(prop3.get(), is(equalTo(expectedArchaiusPropertyValueThree)));
 		
-		// when  updated the value in db
+		// when  updated the value in DB
 		UpdateTestDataForArchaiusTest updateTestData=new UpdateTestDataForArchaiusTest();
 		updateTestData.initializedDerby();
 		Thread.sleep(100);
@@ -102,10 +102,14 @@ public class ArchaiusJdbcPropertiesLoadingFromDBandPropertyResourceTest {
 
 		assertThat(prop3.get(), is(equalTo(newExpectedArchaiusPropertyValueThree)));
 		
-        // call to reset the values ..so that other test don't fail
-		ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
-		resetTestData.initializedDerby();
+		//resetting the data to initial value
+		ResetTestDataForArchaiusTest resetData=new ResetTestDataForArchaiusTest();
+		resetData.initializedDerby();
 		Thread.sleep(100);
+		
+		//shutting down the in memory database.
+		DeleteTestDataAndSchemaForArchaiusTest deleteDB= new DeleteTestDataAndSchemaForArchaiusTest();
+		deleteDB.deleteDatabase();
 		
 	}
 }

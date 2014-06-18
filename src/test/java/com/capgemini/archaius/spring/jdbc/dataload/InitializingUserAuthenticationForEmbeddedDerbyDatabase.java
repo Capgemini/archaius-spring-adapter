@@ -6,17 +6,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 
+ * @author Sanjay Kumar.
+ */
 public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 
 	private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-	private String protocol = "jdbc:derby:";
-
-	public static void main(String[] arrs) {
-		InitializingUserAuthenticationForEmbeddedDerbyDatabase derbyDatabase = new InitializingUserAuthenticationForEmbeddedDerbyDatabase();
-		derbyDatabase.initializedDerby();
-	}
-
+	private String protocol = "jdbc:derby:memory:";
+	public Logger LOGGER = LoggerFactory.getLogger(InitializingUserAuthenticationForEmbeddedDerbyDatabase.class);
+	
 	public void initializedDerby() {
+		
 		loadDriver();
 
 		Connection conn = null;
@@ -27,33 +31,33 @@ public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 
 		// Start the database and set up users, then close database
 		try {
-			System.out.println("Trying to connect to " + connectionURL);
+			LOGGER.info("Trying to connect to url : {}", connectionURL);
 			conn = DriverManager.getConnection(connectionURL);
-			System.out.println("Connected to database " + connectionURL);
+			LOGGER.info("Connected to database: {} ", connectionURL);
 
 			turnOnBuiltInUsers(conn);
 
 			// shut down the database
 			conn.close();
-			System.out.println("Closed connection");
+			LOGGER.info("Closed connection");
 
 			/*
 			 * In embedded mode, an application should shut down Derby. Shutdown
 			 * throws the XJ015 exception to confirm success.
 			 */
-			boolean gotSQLExc = false;
+		/*	boolean gotSQLExc = false;
 			try {
-				DriverManager.getConnection("jdbc:derby:;shutdown=true");
+				DriverManager.getConnection("jdbc:derby;shutdown=true");
 			} catch (SQLException se) {
 				if (se.getSQLState().equals("XJ015")) {
 					gotSQLExc = true;
 				}
 			}
 			if (!gotSQLExc) {
-				System.out.println("Database did not shut down normally");
+				LOGGER.info("Database did not shut down normally");
 			} else {
-				System.out.println("Database shut down normally");
-			}
+				LOGGER.info("Database shut down normally");
+			}*/
 
 			// force garbage collection to unload the EmbeddedDriver
 			// so Derby can be restarted
@@ -68,17 +72,17 @@ public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 
 		try {
 			Class.forName(driver).newInstance();
-			System.out.println("Loaded the appropriate driver");
+			LOGGER.info("Loaded the appropriate driver");
 		} catch (ClassNotFoundException cnfe) {
-			System.err.println("\nUnable to load the JDBC driver " + driver);
-			System.err.println("Please check your CLASSPATH.");
+			LOGGER.error("\nUnable to load the JDBC driver " + driver);
+			LOGGER.error("Please check your CLASSPATH.");
 			cnfe.printStackTrace(System.err);
 		} catch (InstantiationException ie) {
-			System.err.println("\nUnable to instantiate the JDBC driver "
+			LOGGER.error("\nUnable to instantiate the JDBC driver "
 					+ driver);
 			ie.printStackTrace(System.err);
 		} catch (IllegalAccessException iae) {
-			System.err.println("\nNot allowed to access the JDBC driver "
+			LOGGER.error("\nNot allowed to access the JDBC driver "
 					+ driver);
 			iae.printStackTrace(System.err);
 		}
@@ -90,8 +94,8 @@ public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 	 * @param conn
 	 *            a connection to the database.
 	 */
-	public static void turnOnBuiltInUsers(Connection conn) throws SQLException {
-		System.out.println("Turning on authentication.");
+	private void turnOnBuiltInUsers(Connection conn) throws SQLException {
+		LOGGER.info("Turning on authentication.");
 		Statement s = conn.createStatement();
 
 		// Setting and Confirming requireAuthentication
@@ -101,7 +105,7 @@ public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 				.executeQuery("VALUES SYSCS_UTIL.SYSCS_GET_DATABASE_PROPERTY("
 						+ "'derby.connection.requireAuthentication')");
 		rs.next();
-		System.out.println("Value of requireAuthentication is "
+		LOGGER.info("Value of requireAuthentication is "
 				+ rs.getString(1));
 		// Setting authentication scheme to Derby
 		s.executeUpdate("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY("
@@ -123,7 +127,7 @@ public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 		rs = s.executeQuery("VALUES SYSCS_UTIL.SYSCS_GET_DATABASE_PROPERTY("
 				+ "'derby.database.defaultConnectionMode')");
 		rs.next();
-		System.out.println("Value of defaultConnectionMode is "
+		LOGGER.info("Value of defaultConnectionMode is "
 				+ rs.getString(1));
 
 		// Defining read-write users
@@ -138,7 +142,7 @@ public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 		rs = s.executeQuery("VALUES SYSCS_UTIL.SYSCS_GET_DATABASE_PROPERTY("
 				+ "'derby.database.fullAccessUsers')");
 		rs.next();
-		System.out.println("Value of fullAccessUsers is " + rs.getString(1));
+		LOGGER.info("Value of fullAccessUsers is " + rs.getString(1));
 
 		// Confirming read-only users
 		rs = s.executeQuery("VALUES SYSCS_UTIL.SYSCS_GET_DATABASE_PROPERTY("
@@ -157,22 +161,22 @@ public class InitializingUserAuthenticationForEmbeddedDerbyDatabase {
 	/**
 	 * Exception reporting methods with special handling of SQLExceptions
 	 */
-	static void errorPrint(Throwable e) {
+	private void errorPrint(Throwable e) {
 		if (e instanceof SQLException)
 			SQLExceptionPrint((SQLException) e);
 		else {
-			System.out.println("A non-SQL error occurred.");
+			LOGGER.info("A non-SQL error occurred.");
 			e.printStackTrace();
 		}
 	}
 
 	// Iterates through a stack of SQLExceptions
-	static void SQLExceptionPrint(SQLException sqle) {
+	private void SQLExceptionPrint(SQLException sqle) {
 		while (sqle != null) {
-			System.out.println("\n---SQLException Caught---\n");
-			System.out.println("SQLState:   " + (sqle).getSQLState());
-			System.out.println("Severity: " + (sqle).getErrorCode());
-			System.out.println("Message:  " + (sqle).getMessage());
+			LOGGER.info("\n---SQLException Caught---\n");
+			LOGGER.info("SQLState:   " + (sqle).getSQLState());
+			LOGGER.info("Severity: " + (sqle).getErrorCode());
+			LOGGER.info("Message:  " + (sqle).getMessage());
 			sqle.printStackTrace();
 			sqle = sqle.getNextException();
 		}

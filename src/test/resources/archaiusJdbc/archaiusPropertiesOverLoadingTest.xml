@@ -6,9 +6,11 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.12.2.xsd">
 
+	<bean id="initDerby" class="com.capgemini.archaius.spring.jdbc.dataload.InitializingUserAuthenticationForEmbeddedDerbyDatabase" init-method="initializedDerby"/>
+	<bean id="loadData" class="com.capgemini.archaius.spring.jdbc.dataload.MainClassToRunBeforeRunningArchaiusTest"  init-method="initializedDerby" depends-on="initDerby"/>
 	<!-- Config loading via Spring-Archaius -->
-	<bean	class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer">
-		<property name="jdbcConnectionLocation" value="driverClassName#org.apache.derby.jdbc.EmbeddedDriver||dbURL#jdbc:derby:jdbcDemoDB;create=true||username#admin||password#nimda||sqlQuerry#select distinct property_key, property_value from MYSITEPROPERTIES||keyColumnName#property_key||valueColumnName#property_value" />
+	<bean	class="com.capgemini.archaius.spring.ArchaiusJdbcBridgePropertyPlaceholderConfigurer" depends-on="loadData">
+		<property name="jdbcConnectionLocation" value="driverClassName#org.apache.derby.jdbc.EmbeddedDriver||dbURL#jdbc:derby:memory:jdbcDemoDB;create=false||username#admin||password#nimda||sqlQuerry#select distinct property_key, property_value from MYSITEPROPERTIES||keyColumnName#property_key||valueColumnName#property_value" />
 		<property name="location" value="classpath:properties/archaiusPropertyOverloading.properties" />
 	
 	</bean>

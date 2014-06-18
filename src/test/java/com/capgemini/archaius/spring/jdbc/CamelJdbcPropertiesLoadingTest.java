@@ -19,12 +19,15 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.capgemini.archaius.spring.jdbc.dataload.DeleteTestDataAndSchemaForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.ResetTestDataForArchaiusTest;
 import com.capgemini.archaius.spring.jdbc.dataload.UpdateTestDataForArchaiusTest;
 
@@ -64,7 +67,6 @@ public class CamelJdbcPropertiesLoadingTest {
 	private final String newArchaiusPropertyKeyThree = "Error500";
 	private final String newExpectedArchaiusPropertyValueThree = "New Internal Server Error";
 	
-
     @DirtiesContext
     @Test
     public void propertiesAreLoadedFromDatabaseAndAccessedViaCamelValueAnnotation() throws Exception {
@@ -83,11 +85,10 @@ public class CamelJdbcPropertiesLoadingTest {
         assertThat(camelPropertyValueThree, is(equalTo(expectedArchaiusPropertyValueThree)));
         
         // when updating the data in DB
-		
      	UpdateTestDataForArchaiusTest updateTestData=new UpdateTestDataForArchaiusTest();
      	updateTestData.initializedDerby();
      	Thread.sleep(100);
-     		
+     	
      	//then  still camel context will have old data not the new values
      	 camelPropertyValueOne = context.resolvePropertyPlaceholders("{{" + newArchaiusPropertyKeyOne + "}}");
          camelPropertyValueTwo = context.resolvePropertyPlaceholders("{{" + newArchaiusPropertyKeyTwo + "}}");
@@ -105,9 +106,13 @@ public class CamelJdbcPropertiesLoadingTest {
          assertThat(camelPropertyValueThree, is(equalTo(expectedArchaiusPropertyValueThree)));
          assertThat(camelPropertyValueThree, is(not(newExpectedArchaiusPropertyValueThree)));
          
-         // call to reset the values ..so that other test don't fail
- 		 ResetTestDataForArchaiusTest resetTestData=new ResetTestDataForArchaiusTest();
- 		 resetTestData.initializedDerby();
- 		 Thread.sleep(100);
+     	//resetting the data to initial value
+ 		ResetTestDataForArchaiusTest resetData=new ResetTestDataForArchaiusTest();
+ 		resetData.initializedDerby();
+ 		Thread.sleep(100);
+ 		
+        //shutting down the in memory database.
+ 		 DeleteTestDataAndSchemaForArchaiusTest deleteDB= new DeleteTestDataAndSchemaForArchaiusTest();
+		 deleteDB.deleteDatabase();
     }
 }
