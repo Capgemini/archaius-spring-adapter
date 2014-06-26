@@ -13,7 +13,7 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <title>Archaius-spring-adapter by Capgemini</title>
+    <title>Archaius-Spring-Adapter by Capgemini</title>
   </head>
 
   <body>
@@ -28,38 +28,103 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+          <h3><a name="welcome-to-archaius-spring-adapter" class="anchor" href="#welcome-to-archaius-spring-adapter"><span class="octicon octicon-link"></span></a>Welcome to Archaius-Spring-Adapter.</h3>
+<p>Welcome to the archaius-spring-adapter. As we say in the POM, our aim is to simply extend the Spring (and Camel) PropertyPlaceholders in order to support Netflix's Archaius as the single source of all property information.</p>
+<p>Why would we go to this trouble? Properties can be loaded fine into Spring, and now, with the BridgePropertyPlaceholder from Camel you can use that same file for your Camel properties too.</p>
+<p>But what if you want more? Specifically, the itch that we scratched was the desire to use the Netflix Hystrix circuit breakers in our Spring/Camel projects. These depend upon Archaius for their configuration, and as you need to tune them, this configuration is important. Having already got all our Camel and Spring properties in one place, why would we want to accept another properties source just for one more component in our architecture? After some googling, the archaius-spring-adapter was born.</p>
+<p>At this point, it should be noted right up front that while the itch for this scratching was ours, we weren't alone. The initial example upon which this code is based can be seen in <a href="https://github.com/Netflix/archaius/issues/113">this Archaius issue thread.</a></p>
+<p>We'd like to thank the guys there for their support, especially @mumrah whose gist kicked this all off and @chriswhitcombe for his technical input. We'd also like to thank them for the permission to release this code licensed under the Apache v2.0 OSS licence.</p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<h3><a name="Getting Started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
+<p>It's dead simple to use the adapter. Just download one of the releases from this repo, or add our maven bintray repo (find the details in pom.xml) to your maven project.</p>
+<p>Now you're free to start bringing in the archaius goodness. We're (still) using Spring XML config and all you need do if you have Spring alone (i.e. no Camel) is something like:</p>
+<code>
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+    <!-- Config loading via Spring-Archaius-->
+    <bean class="com.capgemini.archaius.spring.ArchaiusPropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:/META-INF/system.properties" />
+    </bean>
+</beans>
+</code> 
+<p>The "location" property works just as you would expect it to. By this we mean you can have an ordered list of properties files:</p>
+<code>
+<!-- Config loading via Spring-Archaius-->
+<bean class="com.capgemini.archaius.spring.ArchaiusPropertyPlaceholderConfigurer">
+    <property name="locations">
+        <list>
+            <value>classpath:/META-INF/system.properties</value>
+            <value>classpath:/META-INF/even-more-system.properties</value>
+        </list>
+    </property>
+</bean>
+</code>
+<p>With property overloading as you'd expect from standard Spring properties.</p>
+<p>Additionally, and again as Spring users will expect, you can let Spring know whether it can ignore missing resource files:</p>
+<code>
+<bean class="com.capgemini.archaius.spring.ArchaiusPropertyPlaceholderConfigurer">
+    <property name="ignoreResourceNotFound" value="false" />
+    <property name="locations">
+        <list>
+            <value>classpath:/META-INF/system.properties</value>
+            <value>classpath:/META-INF/file-not-there.properties</value>
+        </list>
+    </property>
+</bean>
+</code>
+<p>If you're using Camel, everything in the above examples works as you'd expect, but you need to use a different bean class:</p>
+<code>
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.12.2.xsd">
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+    <!-- Config loading via Spring-Archaius-->
+    <bean class="com.capgemini.archaius.spring.ArchaiusBridgePropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/META-INF/system.properties</value>
+                <value>classpath:/META-INF/file-not-there.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true" />
+    </bean>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+    <camel:camelContext id="camel" />
+</beans>
+</code>
+<p>That's it!</p>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<h3><a name="getting-involved" class="anchor" href="#getting-involved"><span class="octicon octicon-link"></span></a>Getting Involved</h3>
+<p>We're patently working on support to solve our own problems first, but it's also clear that there is much more we could add to this project. We'd love to have contributions from folks in all the standard ways:</p>
+<ul>
+<li>Questions and Answers via the Google Group - https://groups.google.com/forum/#!forum/archaius-spring-adapter</li>
+<li>Issue Reports via GitHub</li>
+<li>Pull Requests (fixes, more tests, new features, typo-corrections etc) via GitHub (we follow the standard workflow)</li>
+<li>Wiki documentation</li>
+</ul>
+<p>We maintain a list of the issues that we're working on as you'd expect. By looking there you can see what our priorities are. Please feel free to comment on any of them or add more.</p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<h3><a name="Contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h3>
+<ul>
+  <li>@andrewharmellaw</li>
+<li>@gayathu-rajan</li>
+<li>@nickjwalter</li>
+<li>@rart</li>
+<li>@sanjaykumar81</li>
+</ul>
+</section>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-        </section>
 
         <aside id="sidebar">
           <a href="https://github.com/Capgemini/archaius-spring-adapter/zipball/master" class="button">
