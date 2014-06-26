@@ -36,73 +36,11 @@
 <p>We'd like to thank the guys there for their support, especially @mumrah whose gist kicked this all off and @chriswhitcombe for his technical input. We'd also like to thank them for the permission to release this code licensed under the Apache v2.0 OSS licence.</p>
 
 
-<h3><a name="Getting Started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
+<h3><a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
 <p>It's dead simple to use the adapter. Just download one of the releases from this repo, or add our maven bintray repo (find the details in pom.xml) to your maven project.</p>
-<p>Now you're free to start bringing in the archaius goodness. We're (still) using Spring XML config and all you need do if you have Spring alone (i.e. no Camel) is something like:</p>
-<pre>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+<p>Now you're free to start bringing in the archaius goodness. 
 
-    <!-- Config loading via Spring-Archaius-->
-    <bean class="com.capgemini.archaius.spring.ArchaiusPropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:/META-INF/system.properties" />
-    </bean>
-</beans>
-</pre> 
-<p>The "location" property works just as you would expect it to. By this we mean you can have an ordered list of properties files:</p>
-<code>
-<!-- Config loading via Spring-Archaius-->
-<bean class="com.capgemini.archaius.spring.ArchaiusPropertyPlaceholderConfigurer">
-    <property name="locations">
-        <list>
-            <value>classpath:/META-INF/system.properties</value>
-            <value>classpath:/META-INF/even-more-system.properties</value>
-        </list>
-    </property>
-</bean>
-</code>
-<p>With property overloading as you'd expect from standard Spring properties.</p>
-<p>Additionally, and again as Spring users will expect, you can let Spring know whether it can ignore missing resource files:</p>
-<code>
-<bean class="com.capgemini.archaius.spring.ArchaiusPropertyPlaceholderConfigurer">
-    <property name="ignoreResourceNotFound" value="false" />
-    <property name="locations">
-        <list>
-            <value>classpath:/META-INF/system.properties</value>
-            <value>classpath:/META-INF/file-not-there.properties</value>
-        </list>
-    </property>
-</bean>
-</code>
-<p>If you're using Camel, everything in the above examples works as you'd expect, but you need to use a different bean class:</p>
-<code>
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:camel="http://camel.apache.org/schema/spring"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-                           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.12.2.xsd">
-
-    <!-- Config loading via Spring-Archaius-->
-    <bean class="com.capgemini.archaius.spring.ArchaiusBridgePropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:/META-INF/system.properties</value>
-                <value>classpath:/META-INF/file-not-there.properties</value>
-            </list>
-        </property>
-        <property name="ignoreResourceNotFound" value="true" />
-    </bean>
-
-    <camel:camelContext id="camel" />
-</beans>
-</code>
-<p>That's it!</p>
+<p>for examples of how to use the archaius-spring-adapter in your Spring and Camel config files, see the main project <a href="https://github.com/Capgemini/archaius-spring-adapter/blob/master/README.md">README</a></p>
 
 <h3><a name="getting-involved" class="anchor" href="#getting-involved"><span class="octicon octicon-link"></span></a>Getting Involved</h3>
 <p>We're patently working on support to solve our own problems first, but it's also clear that there is much more we could add to this project. We'd love to have contributions from folks in all the standard ways:</p>
@@ -114,7 +52,7 @@
 </ul>
 <p>We maintain a list of the issues that we're working on as you'd expect. By looking there you can see what our priorities are. Please feel free to comment on any of them or add more.</p>
 
-<h3><a name="Contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h3>
+<h3><a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h3>
 <ul>
   <li>@andrewharmellaw</li>
 <li>@gayathu-rajan</li>
