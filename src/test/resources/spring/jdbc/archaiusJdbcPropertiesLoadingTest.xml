@@ -16,6 +16,9 @@
         <property name="locations">
             <list>
                 <value>classpath:properties/archaiusPropertyOverloading.properties</value>
+                <value>classpath:/META-INF/system.properties</value>
+                <value>classpath:/META-INF/file-not-there.properties</value>
+                <value>file:/test/file.properties</value>
             </list>
         </property>
     </bean>

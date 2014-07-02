@@ -40,7 +40,7 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
     private static final Logger LOGGER = LoggerFactory.getLogger(ArchaiusBridgePropertyPlaceholderConfigurer.class);
     private final transient ArchaiusSpringPropertyPlaceholderSupport propertyPlaceholderSupport
             = new ArchaiusSpringPropertyPlaceholderSupport();
-    private transient boolean ignoreResourceNotFound;
+    private transient boolean ignoreResourceNotFound=false;
     private transient boolean ignoreDeletesFromSource = true;
     private transient Map<String, String> jdbcConnectionDetailMap = null;
 
