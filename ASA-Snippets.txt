@@ -1,0 +1,29 @@
+/** temporary */
+        DriverManagerDataSource ds = buildDataSourceFromConnectionDetailsMap(jdbcConnectionDetailMap);
+        JDBCConfigurationSource source = buildJdbcConfigSourceFromConnectionDetailsMap(ds, jdbcConnectionDetailMap);
+        FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(initialDelayMillis, delayMillis, ignoreDeletesFromSource);
+        DynamicConfiguration dynamicConfiguration = new DynamicConfiguration(source, scheduler);
+        /** temporary */
+        
+//        DynamicConfiguration dynamicConfiguration = buildDynamicConfigFromConnectionDetailsMap(jdbcConnectionDetailMap, initialDelayMillis, delayMillis, ignoreDeletesFromSource);
+        
+		
+
+    
+    
+    // TODO: the additional parameters are passed into this in the map anyway
+    private DynamicConfiguration buildDynamicConfigFromConnectionDetailsMap(Map<String, String> jdbcConnectionDetailMap, int initialDelayMillis, int delayMillis, boolean ignoreDeletesFromSource) {
+        DriverManagerDataSource ds = buildDataSourceFromConnectionDetailsMap(jdbcConnectionDetailMap);
+        JDBCConfigurationSource source = buildJdbcConfigSourceFromConnectionDetailsMap(ds, jdbcConnectionDetailMap);
+        FixedDelayPollingScheduler scheduler = new FixedDelayPollingScheduler(initialDelayMillis, delayMillis, ignoreDeletesFromSource);
+        DynamicConfiguration dc =  new DynamicConfiguration(source, scheduler);
+        return dc;
+    }
+    
+    private JDBCConfigurationSource buildJdbcConfigSourceFromConnectionDetailsMap(DriverManagerDataSource ds, Map<String, String> jdbcConnectionDetailMap) {
+        JDBCConfigurationSource source = new JDBCConfigurationSource(ds,
+                jdbcConnectionDetailMap.get(JdbcContants.SQL_QUERY),
+                jdbcConnectionDetailMap.get(JdbcContants.KEY_COLUMN_NAME),
+                jdbcConnectionDetailMap.get(JdbcContants.VALUE_COLUMN_NAME));
+        return source;
+    }

@@ -1,0 +1,16 @@
+**********TODO*******
+
+Get the spring property placeholder to support JDBC too - do it with duplicates - then move the common bits into the shared file
+make the JDBC URl use URL semantics ("?abc=123&wed=576" etc)
+Make all the "getStringProperty()" calls take a valid default rather than a repeat of the key
+add extensive javadoc to the placeholderconfigurers
+port the junit tests to spock
+derby shutdown exceptions
+
+*********TOO HARD************
+make everything live in location/locations (jdbc et al)
+	do a single entry with "jdbc:..." - we need to be able to add/register a new Spring Resource implementation to do this
+
+	
+**********DONE****************	
+clean out the system.properties and evenMoreSystem.properties from src/main/resources
