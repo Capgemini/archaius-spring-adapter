@@ -8,7 +8,8 @@ package com.capgemini.archaius.spring.constants;
 public final class JdbcContants {
 	
 	private JdbcContants(){}
-
+    
+    public static final String DB_DRIVER ="driverClassName";
 	public static final String DB_URL ="dbURL";
 	public static final String USERNAME="username";
 	public static final String PASSWORD="password";
