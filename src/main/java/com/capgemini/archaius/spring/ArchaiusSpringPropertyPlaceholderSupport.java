@@ -211,6 +211,7 @@ class ArchaiusSpringPropertyPlaceholderSupport {
         DriverManagerDataSource ds = new DriverManagerDataSource(jdbcConnectionDetailMap.get(JdbcContants.DB_URL),
                 jdbcConnectionDetailMap.get(JdbcContants.USERNAME),
                 jdbcConnectionDetailMap.get(JdbcContants.PASSWORD));
+        ds.setDriverClassName(jdbcConnectionDetailMap.get(JdbcContants.DB_DRIVER));
         return ds;
     }
 }
