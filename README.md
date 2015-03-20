@@ -147,6 +147,10 @@ We maintain a list of the issues that we're working on as you'd expect.  By
 looking there you can see what our priorities are.  Please feel free to comment
 on any of them or add more.
 
+Users
+-----
+We love to know who uses archaius-spring-adapter.  If you are a user, please add yourself to the list in the USERS.md page via a pull request.
+
 Developers
 ----------
 
