@@ -5,7 +5,7 @@ Please include your company by add the links yourself (please use HTTPS
 URLs if possible), adding links to blogs about it if you like and 
 [submit a pull request][1]!
 
-* Capgemini - three projects [2]
+* Capgemini - [three projects][2]
 
 [1]: https://github.com/Capgemini/archaius-spring-adapter/blob/master/README.md#getting-involved
 [2]: http://capgemini.github.io/architecture/microservices-reality-check/
