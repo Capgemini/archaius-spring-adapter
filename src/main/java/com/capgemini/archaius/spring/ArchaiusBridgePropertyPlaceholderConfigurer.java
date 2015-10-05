@@ -39,6 +39,7 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
     private transient int delayMillis = DEFAULT_DELAY;
     private transient boolean ignoreResourceNotFound = false;
     private transient boolean ignoreDeletesFromSource = true;
+    private transient boolean allowMultiplePlaceholders = false;
     
     private final transient ArchaiusSpringPropertyPlaceholderSupport propertyPlaceholderSupport
             = new ArchaiusSpringPropertyPlaceholderSupport();
@@ -78,6 +79,16 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
         this.ignoreDeletesFromSource = ignoreDeletesFromSource;
     }
 
+    /**
+     * Should the system allow duplicate beans and just read from the initial one? 
+     * This helps in the case where you want to define beans in both a parent web application
+     * context and a servlet-specific context
+     */
+    public void setAllowMultiplePlaceholders(boolean allowMultiplePlaceholders) {
+        this.allowMultiplePlaceholders = allowMultiplePlaceholders;
+    }
+    
+    
     @Override
     protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
         return propertyPlaceholderSupport.resolvePlaceholder(placeholder, props, systemPropertiesMode);
@@ -101,7 +112,8 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
     @Override
     public void setLocations(Resource[] locations) {
         try {       
-            Map parameterMap = propertyPlaceholderSupport.getParameterMap(delayMillis, initialDelayMillis, ignoreDeletesFromSource, ignoreResourceNotFound);
+            Map parameterMap = propertyPlaceholderSupport.getParameterMap(delayMillis, initialDelayMillis, ignoreDeletesFromSource, 
+                                                                          ignoreResourceNotFound, allowMultiplePlaceholders);
             
             // If there is not also a JDBC properties location to consider
             if (jdbcConnectionDetailMap == null) {
