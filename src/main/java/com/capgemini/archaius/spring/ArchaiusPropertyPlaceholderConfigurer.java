@@ -39,6 +39,7 @@ public class ArchaiusPropertyPlaceholderConfigurer extends PropertyPlaceholderCo
     private transient int delayMillis = DEFAULT_DELAY;
     private transient boolean ignoreResourceNotFound = false;
     private transient boolean ignoreDeletesFromSource = true;
+    private transient boolean allowMultiplePlaceholders = false;
 
     private final transient ArchaiusSpringPropertyPlaceholderSupport propertyPlaceholderSupport 
             = new ArchaiusSpringPropertyPlaceholderSupport();
@@ -72,6 +73,15 @@ public class ArchaiusPropertyPlaceholderConfigurer extends PropertyPlaceholderCo
         this.ignoreDeletesFromSource = ignoreDeletesFromSource;
     }
 
+    /**
+     * Should the system allow duplicate beans and just read from the initial one? 
+     * This helps in the case where you want to define beans in both a parent web application
+     * context and a servlet-specific context
+     */
+    public void setAllowMultiplePlaceholders(boolean allowMultiplePlaceholders) {
+        this.allowMultiplePlaceholders = allowMultiplePlaceholders;
+    }
+    
     @Override
     public void setIgnoreResourceNotFound(boolean setting) {
         ignoreResourceNotFound = setting;
@@ -101,7 +111,8 @@ public class ArchaiusPropertyPlaceholderConfigurer extends PropertyPlaceholderCo
     @Override
     public void setLocations(Resource[] locations) {
         try {        
-            Map parameterMap = propertyPlaceholderSupport.getParameterMap(delayMillis, initialDelayMillis, ignoreDeletesFromSource, ignoreResourceNotFound);
+            Map parameterMap = propertyPlaceholderSupport.getParameterMap(delayMillis, initialDelayMillis, ignoreDeletesFromSource, 
+                                                                          ignoreResourceNotFound, allowMultiplePlaceholders);
             
             // If there is not also a JDBC properties location to consider
             if (jdbcConnectionDetailMap == null) {

@@ -22,4 +22,5 @@ public final class JdbcContants {
     public static final String IGNORE_DELETE_FROM_SOURCE = "ignoreDeletesFromSource";
     public static final String INITIAL_DELAY_MILLIS = "initialDelayMillis";
     public static final String DELAY_MILLIS = "delayMillis";
+    public static final String ALLOW_MULTIPLE_PLACEHOLDERS = "allowMultiplePlaceholders";
 }
