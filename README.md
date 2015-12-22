@@ -1,4 +1,4 @@
-[![Build Status](https://buildhive.cloudbees.com/job/Capgemini/job/archaius-spring-adapter/badge/icon)](https://buildhive.cloudbees.com/job/Capgemini/job/archaius-spring-adapter/)
+[ ![Download](https://api.bintray.com/packages/capgeminiuk/maven/archaius-spring-adapter/images/download.svg) ](https://bintray.com/capgeminiuk/maven/archaius-spring-adapter/_latestVersion)
 
 Archaius Spring Adapter
 ===============================
