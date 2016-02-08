@@ -40,6 +40,7 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
     private transient boolean ignoreResourceNotFound = false;
     private transient boolean ignoreDeletesFromSource = true;
     private transient boolean allowMultiplePlaceholders = false;
+    private transient boolean includeSystemConfiguration = false;
     
     private final transient ArchaiusSpringPropertyPlaceholderSupport propertyPlaceholderSupport
             = new ArchaiusSpringPropertyPlaceholderSupport();
@@ -88,6 +89,16 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
         this.allowMultiplePlaceholders = allowMultiplePlaceholders;
     }
     
+    /**
+     * If set to true, includes a {@link org.apache.commons.configuration.SystemConfiguration} in the 
+     * configuration set to allow overriding/setting of parameters from the command line. 
+     * Defaults to false.
+     * 
+     * @param includeSystemConfiguration
+     */
+    public void setIncludeSystemConfiguration(boolean includeSystemConfiguration) {
+        this.includeSystemConfiguration = includeSystemConfiguration;
+    }
     
     @Override
     protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
@@ -113,7 +124,7 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
     public void setLocations(Resource[] locations) {
         try {       
             Map parameterMap = propertyPlaceholderSupport.getParameterMap(delayMillis, initialDelayMillis, ignoreDeletesFromSource, 
-                                                                          ignoreResourceNotFound, allowMultiplePlaceholders);
+                                                                          ignoreResourceNotFound, allowMultiplePlaceholders, includeSystemConfiguration);
             
             // If there is not also a JDBC properties location to consider
             if (jdbcConnectionDetailMap == null) {

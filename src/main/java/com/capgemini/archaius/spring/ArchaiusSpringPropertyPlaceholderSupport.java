@@ -26,6 +26,8 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicURLConfiguration;
 import com.netflix.config.FixedDelayPollingScheduler;
 import com.netflix.config.sources.JDBCConfigurationSource;
+
+import org.apache.commons.configuration.SystemConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -119,6 +121,7 @@ class ArchaiusSpringPropertyPlaceholderSupport {
         int delayMillis = Integer.valueOf(parameterMap.get(JdbcContants.DELAY_MILLIS));
         boolean ignoreDeletesFromSource = Boolean.parseBoolean(parameterMap.get(JdbcContants.IGNORE_DELETE_FROM_SOURCE));
         boolean ignoreResourceNotFound = Boolean.parseBoolean(parameterMap.get(JdbcContants.IGNORE_RESOURCE_NOT_FOUND));
+        boolean includeSystemConfiguration = Boolean.parseBoolean(parameterMap.get(JdbcContants.INCLUDE_SYSTEM_CONFIGURATION));
         
         for (int i = locations.length - 1; i >= 0; i--) {
             try {
@@ -129,6 +132,10 @@ class ArchaiusSpringPropertyPlaceholderSupport {
                     throw ex;
                 }
             }
+        }
+        
+        if (includeSystemConfiguration) {
+            conComConfiguration.addConfiguration(new SystemConfiguration());
         }
         
         return conComConfiguration;
@@ -153,7 +160,7 @@ class ArchaiusSpringPropertyPlaceholderSupport {
 
     protected Map<String, String> getParameterMap(int delayMillis, int initialDelayMillis, 
                                                   boolean ignoreDeleteFromSource, boolean ignoreResourceNotFound,
-                                                  boolean allowMultiplePlaceholders) {
+                                                  boolean allowMultiplePlaceholders, boolean includeSystemConfiguration) {
 
         Map parameterMap = new HashMap();
 
@@ -162,6 +169,7 @@ class ArchaiusSpringPropertyPlaceholderSupport {
         parameterMap.put(JdbcContants.IGNORE_DELETE_FROM_SOURCE, String.valueOf(ignoreDeleteFromSource));
         parameterMap.put(JdbcContants.IGNORE_RESOURCE_NOT_FOUND, String.valueOf(ignoreResourceNotFound));
         parameterMap.put(JdbcContants.ALLOW_MULTIPLE_PLACEHOLDERS, String.valueOf(allowMultiplePlaceholders));
+        parameterMap.put(JdbcContants.INCLUDE_SYSTEM_CONFIGURATION, String.valueOf(includeSystemConfiguration));
 
         return parameterMap;
     }
