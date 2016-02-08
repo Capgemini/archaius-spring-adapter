@@ -23,4 +23,5 @@ public final class JdbcContants {
     public static final String INITIAL_DELAY_MILLIS = "initialDelayMillis";
     public static final String DELAY_MILLIS = "delayMillis";
     public static final String ALLOW_MULTIPLE_PLACEHOLDERS = "allowMultiplePlaceholders";
+    public static final String INCLUDE_SYSTEM_CONFIGURATION = "includeSystemConfiguration";
 }

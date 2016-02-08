@@ -132,6 +132,14 @@ Notes:
 * this also works with both the Spring and Camel-bridge placeholders.
 * it also works with the dynamic polling support detailed above
 
+Third is adding in system properties (as read by Apache Commons [System Configuration](https://commons.apache.org/proper/commons-configuration/javadocs/v1.10/apidocs/org/apache/commons/configuration/SystemConfiguration.html) ). 
+This is really helpful if you want to override properties in Archaius from the command line.  You can enable this behavior by setting the following property in your Spring XML:
+    
+    <property name="includeSystemConfiguration" value="true"/>
+
+This will read any properties from the command line (passed via -D parameters) and add them in at the end, meaning they override any properties defined in the 
+other property sources.  
+
 Getting Involved
 ----------------
 
@@ -160,3 +168,4 @@ Developers
 * [Russell Hart](https://github.com/rhart)
 * [Sanjay Kumar](https://github.com/sanjaykumar81)
 * [arsenaid](https://github.com/arsenaid)
+* [Scott D.W. Rankin](https://github.com/sdwr98)
