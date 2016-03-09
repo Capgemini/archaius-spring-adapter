@@ -5,3 +5,5 @@ target/
 *.idea
 *.log
 nbactions.xml
+.classpath
+.project

@@ -99,7 +99,7 @@
         </module>
         <module name="ParameterNumber">
             <property name="severity" value="error"/>
-            <property name="max" value="5"/>
+            <property name="max" value="6"/>
         </module>
 
 
