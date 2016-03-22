@@ -4,7 +4,7 @@
 
     <groupId>com.capgemini</groupId>
     <artifactId>archaius-spring-adapter</artifactId>
-    <version>0.10.1</version>
+    <version>0.10.2-SNAPSHOT</version>
     <description>Extensions to the Spring (and Camel) Property Placeholders to Support Netflix's Archaius to be the ultimate Property Source.</description>
 
     <properties>
@@ -17,7 +17,7 @@
         <connection>scm:git:https://github.com/Capgemini/archaius-spring-adapter.git</connection>
         <developerConnection>scm:git:git@github.com:Capgemini/archaius-spring-adapter.git</developerConnection>
         <url>https://github.com/Capgemini/archaius-spring-adapter</url>
-        <tag>0.10.1</tag>
+        <tag>0.10.2-SNAPSHOT</tag>
     </scm>
 
     <distributionManagement>
