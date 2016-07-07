@@ -15,16 +15,16 @@
  */
 package com.capgemini.archaius.spring;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer;
 import org.apache.commons.configuration.ConfigurationConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  *
@@ -102,7 +102,7 @@ public class ArchaiusBridgePropertyPlaceholderConfigurer extends BridgePropertyP
     
     @Override
     protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
-        return propertyPlaceholderSupport.resolvePlaceholder(placeholder, props, systemPropertiesMode);
+        return propertyPlaceholderSupport.resolvePlaceholder(placeholder, props, systemPropertiesMode).get();
     }
 
     /**
