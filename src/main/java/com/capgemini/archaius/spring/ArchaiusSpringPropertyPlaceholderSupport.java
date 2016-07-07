@@ -19,17 +19,20 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicURLConfiguration;
-import com.netflix.config.FixedDelayPollingScheduler;
+import com.netflix.config.*;
 import com.netflix.config.sources.JDBCConfigurationSource;
 
 import org.apache.commons.configuration.SystemConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -52,8 +55,24 @@ class ArchaiusSpringPropertyPlaceholderSupport {
             + "sqlQuery#s<elect distinct property_key, property_value from MySiteProperties>||"
             + "keyColumnName#<property_key>||valueColumnName#<property_value>";
     
-    protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
-        return DynamicPropertyFactory.getInstance().getStringProperty(placeholder, null).get();
+    protected DynamicStringProperty resolvePlaceholder(final String placeholder, Properties props, int systemPropertiesMode) {
+        return DynamicPropertyFactory.getInstance().getStringProperty(placeholder, null);
+    }
+
+    private void resetPropertyValue(String placeholder, DynamicStringProperty property,
+                                    ConcurrentHashMap<String, BeanDefinition> beanDefinitionMap,
+                                    BeanFactory beanFactory){
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()){
+            BeanDefinition beanDefinition = entry.getValue();
+            MutablePropertyValues mpv = beanDefinition.getPropertyValues();
+            for (PropertyValue pv: mpv.getPropertyValues()){
+                if (pv.getName().equals(placeholder)){
+                    Object bean = beanFactory.getBean(entry.getKey());
+                    BeanWrapper wrapper = new BeanWrapperImpl(bean);
+                    wrapper.setPropertyValue(placeholder, property.get());
+                }
+            }
+        }
     }
 
     /**
